@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>软件系统设计的五点——面向目标的差距地图</title>
+<style>
+ html { -webkit-text-size-adjust: 100%; }
+ body {
+ font-family: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "宋体", Georgia, serif;
+ color: #1a1a1a;
+ line-height: 2.0;
+ font-size: 18px;
+ max-width: 760px;
+ margin: 0 auto;
+ padding: 64px 28px 120px;
+ background: #fcfcfa;
+ }
+ h1 {
+ font-size: 28px;
+ font-weight: 700;
+ text-align: center;
+ letter-spacing: 0.12em;
+ margin: 0 0 24px;
+ line-height: 1.45;
+ }
+ .lead {
+ text-align: center;
+ color: #555;
+ font-size: 16px;
+ margin: 0 0 48px;
+ line-height: 1.7;
+ }
+ h2 {
+ font-size: 21px;
+ font-weight: 700;
+ letter-spacing: 0.04em;
+ margin: 52px 0 20px;
+ padding-bottom: 6px;
+ border-bottom: 1px solid #e3e0d8;
+ }
+ h3 {
+ font-size: 18px;
+ font-weight: 700;
+ margin: 32px 0 12px;
+ }
+ p {
+ margin: 0 0 20px;
+ text-align: justify;
+ text-justify: inter-ideograph;
+ }
+ ul, ol {
+ margin: 0 0 20px;
+ padding-left: 1.4em;
+ }
+ li {
+ margin: 0 0 8px;
+ }
+ blockquote {
+ margin: 24px 0;
+ padding: 12px 20px;
+ border-left: 3px solid #c8c2b4;
+ background: #f5f3ee;
+ color: #333;
+ }
+ blockquote p { margin: 0; }
+ table {
+ width: 100%;
+ border-collapse: collapse;
+ margin: 0 0 28px;
+ font-size: 15px;
+ line-height: 1.55;
+ }
+ th, td {
+ border: 1px solid #ddd6c8;
+ padding: 10px 12px;
+ vertical-align: top;
+ text-align: left;
+ }
+ th {
+ background: #f0ebe3;
+ font-weight: 700;
+ }
+ .term {
+ font-family: "SF Mono", Menlo, Consolas, monospace;
+ font-size: 0.92em;
+ background: #f0ebe3;
+ padding: 0 4px;
+ border-radius: 3px;
+ }
+ .closing {
+ margin-top: 48px;
+ padding-top: 24px;
+ border-top: 1px solid #e3e0d8;
+ font-weight: 600;
+ }
+ .note {
+ font-size: 15px;
+ color: #666;
+ line-height: 1.7;
+ }
+</style>
+</head>
+<body>
+
+<h1>软件系统设计的五点<br>——面向目标的差距地图</h1>
+<p class="lead">从《五点四环节》迁出的设计视角<br>流程图、分层、领域模型之外的一张行动地图</p>
+
+<h2>一、关键洞察</h2>
+
+<p>流程图、架构分层、领域建模，画的是系统的<strong>疆域</strong>——它有哪些构件、如何咬合、边界在哪。这些必要，但不够。面对一个具体系统时，真正决定你把有限精力投向何处的，是另一张图。</p>
+
+<blockquote>
+ <p>五点不是系统结构本身，而是「系统相对于目标」的差距地图。</p>
+</blockquote>
+
+<p>这正是《五点四环节》那一刀的迁移：教学里的重点、难点、易错点、易忘点、拓展点，不是知识网络的内禀属性，而是知识<strong>相对于学习者、相对于「考出来还能用」这一目标</strong>的投影。同理，软件里的「关键点」也不是架构图上的节点清单，而是系统<strong>相对于你此刻目标</strong>的投影——力永远作用于点，不可能均匀铺满整个场。控制不作用于全状态，只作用于偏差。</p>
+
+<p>所以：架构图画完之后，另画一张「用力地图」。前者是疆域，后者是行动。</p>
+
+<h2>二、点是面向目标的投影</h2>
+
+<p>同一张系统，目标一换，投影轴就变，五点整组换掉。下面三组示例说明这一点——它们并不互斥，只是展示「目标决定点集」。</p>
+
+<h3>目标：高可用</h3>
+<ul>
+ <li><strong>关键点</strong>：核心调用链路、依赖的外部服务</li>
+ <li><strong>薄弱点</strong>：单点故障、网络分区场景</li>
+ <li><strong>易错点</strong>：超时重试逻辑、幂等性缺失</li>
+ <li><strong>脆弱点</strong>：降级开关未测试、监控盲区</li>
+ <li><strong>扩展点</strong>：跨机房容灾、多活架构</li>
+</ul>
+
+<h3>目标：可维护</h3>
+<ul>
+ <li><strong>关键点</strong>：领域模型边界、核心抽象</li>
+ <li><strong>薄弱点</strong>：循环依赖、God 类、技术债热点</li>
+ <li><strong>易错点</strong>：状态变更未同步、副作用隐藏</li>
+ <li><strong>脆弱点</strong>：缺文档的 legacy、测试空洞</li>
+ <li><strong>扩展点</strong>：插件化接口、策略模式预留点</li>
+</ul>
+
+<h3>目标：业务价值交付</h3>
+<ul>
+ <li><strong>关键点</strong>：用户核心旅程、转化漏斗关口</li>
+ <li><strong>薄弱点</strong>：数据一致性要求最严格的环节</li>
+ <li><strong>易错点</strong>：边界条件（0、<span class="term">null</span>、空列表）</li>
+ <li><strong>脆弱点</strong>：监控指标与业务 KPI 脱节处</li>
+ <li><strong>扩展点</strong>：A/B 测试能力、特性开关</li>
+</ul>
+
+<p class="note">点数不求 MECE。一个阻力点往往同时是冲突点；分类的正当性来自「用了能不能更快收敛」，不来自逻辑切割是否干净。</p>
+
+<h2>三、系统生命周期的五段论</h2>
+
+<p>教学五点暗藏一条「选—懂—用—存—迁」的时间线。落到软件系统，可写成任何目标下都通用的五段生命周期——每段对应一种典型失败模式，以及一类该用力的点：</p>
+
+<table>
+ <thead>
+ <tr>
+ <th>阶段</th>
+ <th>典型失败模式</th>
+ <th>对应的「点」</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>选</strong><br>需求、选型</td>
+ <td>需求理解偏差、技术栈不匹配</td>
+ <td><strong>决策点</strong>：不可逆的架构选择（数据库、框架、协议、一致性模型）</td>
+ </tr>
+ <tr>
+ <td><strong>懂</strong><br>设计、建模</td>
+ <td>抽象泄漏、边界模糊</td>
+ <td><strong>认知点</strong>：难懂处、反直觉设计、跨域阻抗</td>
+ </tr>
+ <tr>
+ <td><strong>用</strong><br>实现、部署</td>
+ <td>实现与设计脱节、配置错误</td>
+ <td><strong>实现点</strong>：编码难点、集成接口、状态管理</td>
+ </tr>
+ <tr>
+ <td><strong>存</strong><br>运维、监控</td>
+ <td>故障难定位、性能 silently 恶化</td>
+ <td><strong>存续点</strong>：指标监控、告警阈值、演练与恢复</td>
+ </tr>
+ <tr>
+ <td><strong>迁</strong><br>演进、重构</td>
+ <td>改不动、不敢改</td>
+ <td><strong>演进点</strong>：扩展边界、重构切入点、迁移路径</td>
+ </tr>
+ </tbody>
+</table>
+
+<p>问法可以压成五句：选错了会锁死什么？懂的时候最卡在哪？用的时候最容易踩哪？存的时候哪几处会先烂？迁的时候缝在哪里？</p>
+
+<h2>四、7±2：点数由带宽决定，不由复杂度决定</h2>
+
+<p>《五点四环节》里，点数上限不取决于知识有多复杂，取决于<strong>谁拿着地图、在什么条件下用它</strong>。控制器带宽（约 7±2）约束行动范畴；被控对象可以无限复杂。</p>
+
+<p>迁到系统设计，同一条约束处处现身：</p>
+<ul>
+ <li><strong>架构分层</strong>：常见甜区约 4–5 层（如表现 → 应用 → 领域 → 基础设施），层层加码只会抬认知负载</li>
+ <li><strong>模块职责</strong>：一个类/模块的核心职责宜压到可一句话说清</li>
+ <li><strong>依赖管理</strong>：一个服务直接依赖的外部服务宜控制在约 7 个以内；超过则考虑 BFF / 聚合层</li>
+ <li><strong>接口设计</strong>：一个方法的参数宜不超过约 5 个</li>
+ <li><strong>认知负载</strong>：一次 code review 关注的问题宜不超过约 7 个；超过就分批</li>
+ <li><strong>检查清单</strong>：上线 checklist 宜短到真能逐项执行，而不是「看起来很全」</li>
+</ul>
+
+<p>一句话：系统可以很大，但<strong>指挥行动的范畴必须落进人脑可把控的范围</strong>。地图故意有损，丢信息换可行动性。</p>
+
+<h2>五、闭环：目标—差距—控制—反馈</h2>
+
+<p>点管「打哪儿」；环管「打完怎么知道打偏了」。整套方法是一台控制器：</p>
+
+<blockquote>
+ <p>目标设定 → 指标监控（测差距） → 控制作用（改设计/改实现/改配置） → 再测 → 收敛</p>
+</blockquote>
+
+<p>关键是<strong>缩短反馈延迟（feedback latency）</strong>——从偏差发生到被测量、被修正之间的滞后。滞后是不稳定与盲目迭代的根源；教学里「当堂修正、不留到课后」，工程里对应的是把反馈压到尽可能短的环路上：</p>
+<ul>
+ <li><strong>开发</strong>：单元测试（秒级）&gt; 集成测试（分钟级）&gt; 端到端 / 预发验证（小时级）</li>
+ <li><strong>运行</strong>：实时监控 → 可行动告警 → 自动扩容/降级 → 人工介入</li>
+ <li><strong>演进</strong>：特性开关 → 灰度发布 → 快速回滚</li>
+</ul>
+
+<p class="note">控制论里常称 dead time / transport lag；软件与工程口语里更常用 <span class="term">feedback latency</span>、<span class="term">feedback delay</span>，或直接说「缩短反馈回路」。本文统一用「反馈延迟」。</p>
+
+<h2>六、实操：软件系统设计的「五点检查法」</h2>
+
+<p>把上面收成一套可当场用的检查法。仍是启发式，不是定理；目标不同，五项的具体内容会换，但五类角色稳定。</p>
+
+<h3>1. 枢纽点（对应「重点」）</h3>
+<ul>
+ <li><strong>定义</strong>：连接度最高、影响面最大、挂了则业务乘成零的节点（否决项 / 关键路径）</li>
+ <li><strong>识别</strong>：画调用链路与数据权威图，找被依赖最多、或错了全盘皆输的模块</li>
+ <li><strong>设计要求</strong>：高内聚、接口稳定、测试与观测充分、变更极审慎</li>
+</ul>
+
+<h3>2. 阻力点（对应「难点」）</h3>
+<ul>
+ <li><strong>定义</strong>：技术实现难度大、概念摩擦高、易成瓶颈处——「以为懂了其实没想透」的地方</li>
+ <li><strong>识别</strong>：选型评审里的高风险项、POC 验证不充分处、分布式一致性 / 并发 / 容量悬崖</li>
+ <li><strong>设计要求</strong>：早期验证、预留备选、把不确定性从前置到可测</li>
+</ul>
+
+<h3>3. 冲突点（对应「易错点」）</h3>
+<ul>
+ <li><strong>定义</strong>：直觉与正确实现系统性冲突之处</li>
+ <li><strong>识别</strong>：bug 统计、review 高频问题、幂等/重试/竞态/时区/空值/部分失败</li>
+ <li><strong>设计要求</strong>：防御性编程、明确前置条件、把易错路径做成显式协议而非默契</li>
+</ul>
+
+<h3>4. 盲区点（对应「易忘点」）</h3>
+<ul>
+ <li><strong>定义</strong>：会衰减、被忽视、不练就废的能力与角落——系统的「体质与记忆」</li>
+ <li><strong>识别</strong>：降级逻辑未测、边缘 case、监控盲区、文档空洞、备份恢复从未演练、配置漂移</li>
+ <li><strong>设计要求</strong>：checklist 制度化、定期演练、把「存」当成一等公民而非上线后的附录</li>
+</ul>
+
+<h3>5. 演进点（对应「拓展点」）</h3>
+<ul>
+ <li><strong>定义</strong>：系统与外部咬合、面向变化的缝——稳什么、放什么</li>
+ <li><strong>识别</strong>：业务 roadmap、已知技术债、集成契约、伸缩边界、多租户/多区域切割</li>
+ <li><strong>设计要求</strong>：开闭原则、插件化、特性开关；不变量钉死，可变点显式留缝</li>
+</ul>
+
+<p>用法极简：架构评审时，强制每人只报「自己目标下的 5±2 个点」；测试与监控预算优先覆盖枢纽与冲突；预案与演练优先覆盖盲区；重构与版本规划优先落在演进缝上。</p>
+
+<h2>七、使用边界</h2>
+
+<p>这套方法对<strong>结构化、可测量</strong>的系统设计是顶配——目标清楚、差距可测、反馈可建。以下场景它会力不从心：</p>
+<ul>
+ <li><strong>探索性创新</strong>：目标本身未定，无法提前定义「差距」</li>
+ <li><strong>复杂系统涌现</strong>：整体行为无法由局部点的加总推出</li>
+ <li><strong>审美与品味</strong>：代码优雅、架构简洁感——难以当堂测出差距</li>
+</ul>
+
+<p>正如「五点四环节」在培养创造力上有边界，这套方法在工程化收敛上极强，在创造性架构探索上需要配合其他工具（领域驱动设计、事件风暴、原型冲刺等）。边界不是缺陷，是范式的诚实声明：<strong>反馈延迟压不下去、目标测不出的地方，控制机就建不起来。</strong></p>
+
+<p class="closing">一句话：把系统结构投影成 5±2 个面向目标的作用点，在每个点上建立「目标—差距—控制」闭环，并拼命缩短反馈延迟（feedback latency）。地图有损，换来的是：有限精力，打在真能撬动收敛的地方。</p>
+
+</body>
+</html>
