@@ -34,17 +34,21 @@ REPO_ROOT = TOOLS_DIR.parent
 
 
 def build_timestamp() -> dt.datetime:
-    """构建时间取最近一次提交的时间，而不是「现在」。
+    """构建时间取「文稿最后一次改动」的提交时间，而不是「现在」。
 
-    这样同一份文稿反复构建会得到字节一致的 EPUB——重跑构建不会在 git 里留下
-    一个只有时间戳变化的假 diff。`SOURCE_DATE_EPOCH` 可以覆盖它。
+    同一份文稿反复构建因此得到字节一致的 EPUB，重跑不会在 git 里留下一个只有
+    时间戳变化的假 diff。刻意不看 `tools/` 与 `dist/` 的提交：否则提交工具改动或
+    提交产物本身都会让已入库的 EPUB 立刻过期。`SOURCE_DATE_EPOCH` 可以覆盖。
     """
     epoch = os.environ.get("SOURCE_DATE_EPOCH")
     if epoch and epoch.strip().isdigit():
         return dt.datetime.fromtimestamp(int(epoch), dt.timezone.utc)
     try:
         result = subprocess.run(
-            ["git", "-C", str(REPO_ROOT), "log", "-1", "--format=%cI"],
+            [
+                "git", "-C", str(REPO_ROOT), "log", "-1", "--format=%cI",
+                "--", ".", ":(exclude)tools", ":(exclude)dist",
+            ],
             capture_output=True,
             text=True,
             timeout=10,
