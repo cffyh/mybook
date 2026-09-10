@@ -110,16 +110,21 @@ class Article:
 
 @dataclass
 class Group:
-    """卷内的一辑（通常对应一个子目录）。"""
+    """卷内的一辑（通常对应一个子目录）。
+
+    `entries` 按配置里的先后混放篇与子辑，不把两者分成两拨——否则 book.json 里
+    写的顺序会在书里被打乱。
+    """
 
     title: str
-    articles: list[Article] = field(default_factory=list)
-    groups: list["Group"] = field(default_factory=list)
+    entries: list["Article | Group"] = field(default_factory=list)
 
     def walk(self) -> Iterable[Article]:
-        yield from self.articles
-        for group in self.groups:
-            yield from group.walk()
+        for entry in self.entries:
+            if isinstance(entry, Group):
+                yield from entry.walk()
+            else:
+                yield entry
 
 
 @dataclass
@@ -130,14 +135,15 @@ class Volume:
     title: str
     subtitle: str = ""
     intro: str = ""
-    articles: list[Article] = field(default_factory=list)
-    groups: list[Group] = field(default_factory=list)
+    entries: list["Article | Group"] = field(default_factory=list)
     href: str = ""
 
     def walk(self) -> Iterable[Article]:
-        yield from self.articles
-        for group in self.groups:
-            yield from group.walk()
+        for entry in self.entries:
+            if isinstance(entry, Group):
+                yield from entry.walk()
+            else:
+                yield entry
 
 
 @dataclass
@@ -192,24 +198,22 @@ class Collector:
                     self.warnings.append(f"来源不存在，已跳过：{source.path}")
                     continue
                 if target.is_file():
-                    articles = self._to_articles([target])
-                    subgroups: list[Group] = []
+                    entries: list[Article | Group] = list(self._to_articles([target]))
                 else:
                     files, subdirs = self._scan_dir(target, source)
-                    articles = self._to_articles(self._ordered(files, source.order))
-                    subgroups = [
+                    entries = list(self._to_articles(self._ordered(files, source.order)))
+                    entries += [
                         group
                         for subdir in subdirs
                         if (group := self._build_group(subdir, source)) and list(group.walk())
                     ]
-                if not articles and not subgroups:
+                if not entries:
                     continue
                 if source.title:
                     # 给了标题，就把这个来源整体收成卷内的一辑。
-                    volume.groups.append(Group(title=source.title, articles=articles, groups=subgroups))
+                    volume.entries.append(Group(title=source.title, entries=entries))
                 else:
-                    volume.articles.extend(articles)
-                    volume.groups.extend(subgroups)
+                    volume.entries.extend(entries)
             volumes.append(volume)
         return volumes
 
@@ -234,11 +238,11 @@ class Collector:
     def _build_group(self, directory: Path, source: SourceSpec) -> Group | None:
         files, subdirs = self._scan_dir(directory, source)
         group = Group(title=clean_group_title(directory.name))
-        group.articles = self._to_articles(self._ordered(files, source.order))
+        group.entries = list(self._to_articles(self._ordered(files, source.order)))
         for subdir in subdirs:
             child = self._build_group(subdir, source)
             if child and list(child.walk()):
-                group.groups.append(child)
+                group.entries.append(child)
         return group
 
     @staticmethod
@@ -362,20 +366,18 @@ class Renderer:
 
     def render(self, volumes: list[Volume]) -> None:
         for volume in volumes:
-            self._render_group(volume.articles, volume.title, "")
-            for group in volume.groups:
-                self._render_group_tree(group, volume.title)
+            self._render_entries(volume.entries, volume.title, "")
 
-    def _render_group_tree(self, group: Group, volume_title: str) -> None:
-        self._render_group(group.articles, volume_title, group.title)
-        for child in group.groups:
-            self._render_group_tree(child, volume_title)
-
-    def _render_group(self, articles: list[Article], volume_title: str, group_title: str) -> None:
-        for article in articles:
-            article.volume_title = volume_title
-            article.group_title = group_title
-            self._render_one(article)
+    def _render_entries(
+        self, entries: list[Article | Group], volume_title: str, group_title: str
+    ) -> None:
+        for entry in entries:
+            if isinstance(entry, Group):
+                self._render_entries(entry.entries, volume_title, entry.title)
+            else:
+                entry.volume_title = volume_title
+                entry.group_title = group_title
+                self._render_one(entry)
 
     def _render_one(self, article: Article) -> None:
         suffix = article.path.suffix.lower()

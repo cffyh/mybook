@@ -8,8 +8,8 @@ html {
 }
 
 body {
-  font-family: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC",
-    "STSong", "SimSun", "宋体", Georgia, serif;
+  font-family: "Source Han Serif SC", "Noto Serif CJK SC", "Noto Serif SC",
+    "Songti SC", "STSong", "SimSun", "宋体", Georgia, serif;
   line-height: 1.8;
   margin: 0;
   padding: 0 1em;
@@ -24,8 +24,8 @@ body {
 /* ---------- 标题 ---------- */
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC",
-    "Heiti SC", "Microsoft YaHei", "黑体", Helvetica, sans-serif;
+  font-family: "Source Han Sans SC", "Noto Sans CJK SC", "Noto Sans SC",
+    "PingFang SC", "Heiti SC", "Microsoft YaHei", "黑体", Helvetica, sans-serif;
   line-height: 1.4;
   text-align: left;
   page-break-after: avoid;

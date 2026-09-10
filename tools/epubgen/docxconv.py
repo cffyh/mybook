@@ -44,6 +44,15 @@ def _run_html(run: ElementTree.Element) -> str:
     return text
 
 
+def _unbold(inner: str) -> str:
+    """标题里整段套一层 <strong> 是多余的——标题本身就是粗的。"""
+    if inner.startswith("<strong>") and inner.endswith("</strong>"):
+        stripped = inner[len("<strong>"):-len("</strong>")]
+        if "<strong>" not in stripped:
+            return stripped
+    return inner
+
+
 def _heading_level(style: str) -> int | None:
     m = re.fullmatch(r"(?:Heading|heading|标题)\s*([1-6])", style.strip())
     if m:
@@ -88,12 +97,13 @@ def convert(
             if style_node is not None:
                 style = style_node.get(f"{W}val") or ""
         inner = "".join(_run_html(run) for run in para.findall(f"{W}r")).strip()
-        if not inner:
-            continue
         plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", inner)).strip()
+        if not plain:
+            continue  # Word 里用来撑行距的空段落，进书只会变成空白
         level = _heading_level(style)
         if level is not None:
             close_list()
+            inner = _unbold(inner)
             if level == 1 and title is None:
                 title = plain
                 continue

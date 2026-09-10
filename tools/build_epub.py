@@ -94,20 +94,30 @@ def volume_page(volume: Volume) -> str:
     if volume.intro:
         lines.append(f'<p class="volume-intro">{esc(volume.intro)}</p>')
     lines.append('<div class="volume-contents">')
-    lines.append(_contents_list(volume.articles, volume.groups))
+    lines.append(_contents_list(volume.entries))
     lines.append("</div>")
     return "\n".join(lines)
 
 
-def _contents_list(articles: list[Article], groups: list[Group]) -> str:
-    parts = ["<ol>"]
-    for article in articles:
-        href = article.href.split("/")[-1]
-        parts.append(f'<li><a href="{esc(href)}">{esc(article.title)}</a></li>')
-    parts.append("</ol>")
-    for group in groups:
-        parts.append(f'<p class="group-name">{esc(group.title)}</p>')
-        parts.append(_contents_list(group.articles, group.groups))
+def _contents_list(entries: list[Article | Group]) -> str:
+    """分卷页上的本卷目录。连续的篇归进同一个 <ol>，中间插入辑名。"""
+    parts: list[str] = []
+    open_list = False
+    for entry in entries:
+        if isinstance(entry, Group):
+            if open_list:
+                parts.append("</ol>")
+                open_list = False
+            parts.append(f'<p class="group-name">{esc(entry.title)}</p>')
+            parts.append(_contents_list(entry.entries))
+        else:
+            if not open_list:
+                parts.append("<ol>")
+                open_list = True
+            href = entry.href.split("/")[-1]
+            parts.append(f'<li><a href="{esc(href)}">{esc(entry.title)}</a></li>')
+    if open_list:
+        parts.append("</ol>")
     return "\n".join(parts)
 
 
@@ -127,19 +137,26 @@ def article_page(article: Article) -> str:
 
 
 def build_nav(volumes: list[Volume], *, deep: bool) -> list[NavPoint]:
-    points = []
-    for volume in volumes:
-        point = NavPoint(title=volume.title, href=volume.href)
-        point.children = [_article_nav(a, deep) for a in volume.articles]
-        point.children += [_group_nav(g, deep) for g in volume.groups]
-        points.append(point)
-    return points
+    return [
+        NavPoint(
+            title=volume.title,
+            href=volume.href,
+            children=_nav_children(volume.entries, deep),
+        )
+        for volume in volumes
+    ]
+
+
+def _nav_children(entries: list[Article | Group], deep: bool) -> list[NavPoint]:
+    return [
+        _group_nav(entry, deep) if isinstance(entry, Group) else _article_nav(entry, deep)
+        for entry in entries
+    ]
 
 
 def _group_nav(group: Group, deep: bool) -> NavPoint:
     point = NavPoint(title=group.title, href=None)
-    point.children = [_article_nav(a, deep) for a in group.articles]
-    point.children += [_group_nav(g, deep) for g in group.groups]
+    point.children = _nav_children(group.entries, deep)
     if point.children and point.children[0].href:
         # 辑本身没有页面，指向辑内第一篇，免得点上去没反应。
         point.href = point.children[0].href
