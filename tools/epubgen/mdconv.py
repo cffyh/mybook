@@ -534,7 +534,9 @@ class MarkdownConverter:
             return end
         href = self.resolve_link(dest) if self.resolve_link else dest
         was_in_link = self._in_link
-        self._in_link = True
+        # 只有真要输出 <a> 时才禁止内层链接；这条链接被丢掉时，标签里嵌套的链接
+        # 仍该正常成链，否则读者只会看到一串裸的 Markdown 记号。
+        self._in_link = was_in_link or href is not None
         inner = self.inline(label)
         self._in_link = was_in_link
         if href is None:
