@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import os
 import shutil
 import subprocess
 import sys
@@ -30,6 +31,29 @@ from epubgen.structure import Article, Collector, Group, Renderer, Volume
 
 TOOLS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = TOOLS_DIR.parent
+
+
+def build_timestamp() -> dt.datetime:
+    """构建时间取最近一次提交的时间，而不是「现在」。
+
+    这样同一份文稿反复构建会得到字节一致的 EPUB——重跑构建不会在 git 里留下
+    一个只有时间戳变化的假 diff。`SOURCE_DATE_EPOCH` 可以覆盖它。
+    """
+    epoch = os.environ.get("SOURCE_DATE_EPOCH")
+    if epoch and epoch.strip().isdigit():
+        return dt.datetime.fromtimestamp(int(epoch), dt.timezone.utc)
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(REPO_ROOT), "log", "-1", "--format=%cI"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return dt.datetime.fromisoformat(result.stdout.strip()).astimezone(dt.timezone.utc)
+    except (OSError, ValueError, subprocess.SubprocessError):
+        pass
+    return dt.datetime.now(dt.timezone.utc)
 
 
 # ---------------------------------------------------------------- 前后附页
@@ -168,7 +192,7 @@ def build(
     renderer.render(volumes)
 
     raw_meta = dict(config["metadata"])
-    now = dt.datetime.now(dt.timezone.utc)
+    now = build_timestamp()
     meta = Metadata(
         title=edition.get("title", raw_meta["title"]),
         subtitle=edition.get("subtitle", raw_meta.get("subtitle", "")),
@@ -254,6 +278,14 @@ def _report(
     for volume in volumes:
         count = len(list(volume.walk()))
         print(f"  {volume.title}  {count} 篇")
+    if collector.duplicates:
+        print(f"\n去重 {len(collector.duplicates)} 篇：内容与已收录的篇目完全相同。")
+        if verbose:
+            for duplicate, original in collector.duplicates:
+                print(
+                    f"  - {duplicate.relative_to(REPO_ROOT)}"
+                    f"  ≡  {original.relative_to(REPO_ROOT)}"
+                )
     if collector.skipped_stubs:
         print(f"\n跳过 {len(collector.skipped_stubs)} 篇转址占位文件（正文已迁往别处）：")
         for path in collector.skipped_stubs:
@@ -293,23 +325,23 @@ def _report(
 
 def run_epubcheck(path: Path) -> bool:
     """有 epubcheck 就跑一遍。没有则说明怎么装，不当作失败。"""
-    jar = None
-    for candidate in [
+    candidates = [
+        TOOLS_DIR / "epubcheck" / "epubcheck.jar",
         Path("/opt/epubcheck/epubcheck.jar"),
         Path.home() / "epubcheck" / "epubcheck.jar",
-        REPO_ROOT / "tools" / "epubcheck" / "epubcheck.jar",
-    ]:
-        if candidate.is_file():
-            jar = candidate
-            break
+    ]
+    if os.environ.get("EPUBCHECK_JAR"):
+        candidates.insert(0, Path(os.environ["EPUBCHECK_JAR"]))
+    jar = next((c for c in candidates if c.is_file()), None)
     if jar is None and shutil.which("epubcheck"):
         command = ["epubcheck", str(path)]
     elif jar is not None and shutil.which("java"):
         command = ["java", "-jar", str(jar), str(path)]
     else:
         print(
-            "\n未找到 epubcheck，跳过校验。"
-            "\n装法：从 https://github.com/w3c/epubcheck/releases 下载后解压到 tools/epubcheck/。"
+            "\n未找到 epubcheck，跳过校验。装法：从"
+            " https://github.com/w3c/epubcheck/releases 下载后解压到 tools/epubcheck/，"
+            "或用 EPUBCHECK_JAR 指向 jar 文件。"
         )
         return True
     print(f"\n校验 {path.name} …")

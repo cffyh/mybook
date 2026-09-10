@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import unicodedata
@@ -169,7 +170,9 @@ class Collector:
         self.verbose = verbose
         self.claimed: set[Path] = set()
         self.skipped_stubs: list[Path] = []
+        self.duplicates: list[tuple[Path, Path]] = []
         self.warnings: list[str] = []
+        self._by_digest: dict[str, Path] = {}
 
     # ---------- 收集 ----------
 
@@ -261,6 +264,12 @@ class Collector:
             if self.skip_stubs and self._is_stub(path):
                 self.skipped_stubs.append(path)
                 continue
+            # backup/ 下有若干与正式目录一字不差的副本，同一篇不必在书里出现两次。
+            digest = hashlib.sha1(path.read_bytes()).hexdigest()
+            if digest in self._by_digest:
+                self.duplicates.append((path, self._by_digest[digest]))
+                continue
+            self._by_digest[digest] = path
             self.claimed.add(path)
             result.append(
                 Article(
@@ -293,6 +302,8 @@ class Collector:
             if any(part in SKIP_DIRS for part in rel_parts) or any(part.startswith(".") for part in rel_parts):
                 continue
             if path in self.claimed or path in self.skipped_stubs:
+                continue
+            if any(path == duplicate for duplicate, _ in self.duplicates):
                 continue
             missing.append(path)
         return missing
