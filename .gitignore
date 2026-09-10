@@ -6,5 +6,7 @@
 # macOS
 .DS_Store
 
-# EPUB build byproduct (cover is embedded in the .epub)
+# EPUB / wiki build byproducts
 ebook/cover.png
+ebook/__pycache__/
+__pycache__/
