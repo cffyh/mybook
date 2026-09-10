@@ -36,43 +36,108 @@
     };
   }
 
-  function renderTree(filter) {
-    const needle = (filter || "").trim().toLowerCase();
-    const current = parseHash().id;
-    const html = [];
-    for (const vol of W.volumes) {
-      const items = vol.articles.filter((a) => {
-        if (!needle) return true;
-        const hay = (a.title + " " + (a.headings || "")).toLowerCase();
-        return hay.includes(needle);
-      });
-      if (needle && items.length === 0) continue;
-      const open =
-        needle ||
-        vol.articles.some((a) => a.id === current) ||
-        vol.id === current;
-      html.push(`<div class="vol${open ? "" : " collapsed"}" data-vol="${vol.id}">`);
-      html.push(
-        `<button type="button" class="vol-btn">${escapeHtml(vol.title)}</button>`
-      );
-      html.push("<ul>");
-      for (const a of items) {
-        const cls = a.id === current ? "active" : "";
-        html.push(
-          `<li><a class="${cls}" href="#/${a.id}">${escapeHtml(a.title)}</a></li>`
-        );
-      }
-      html.push("</ul></div>");
-    }
-    tree.innerHTML = html.join("") || '<p class="empty">没有匹配的篇目</p>';
-  }
-
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  function nodeText(node) {
+    if (node.type === "article") {
+      const heads = (node.headings || []).map((h) => h.text).join(" ");
+      return (node.title + " " + heads).toLowerCase();
+    }
+    return (node.children || []).some((c) => nodeText(c).includes) ? "" : "";
+  }
+
+  function matches(node, needle) {
+    if (!needle) return true;
+    if (node.type === "article") {
+      return nodeText(node).includes(needle);
+    }
+    return (node.children || []).some((c) => matches(c, needle));
+  }
+
+  function containsId(node, id) {
+    if (!id) return false;
+    if (node.type === "article") return node.id === id;
+    return (node.children || []).some((c) => containsId(c, id));
+  }
+
+  function renderArticle(node, current) {
+    const cls = node.id === current ? "active" : "";
+    let html = `<li><a class="${cls}" href="#/${node.id}">${escapeHtml(node.title)}</a>`;
+    if (node.id === current && node.headings && node.headings.length) {
+      html += '<ul class="heads">';
+      for (const h of node.headings) {
+        const href = h.id ? `#/${node.id}/${encodeURIComponent(h.id)}` : `#/${node.id}`;
+        html += `<li><a class="head" href="${href}">${escapeHtml(h.text)}</a></li>`;
+      }
+      html += "</ul>";
+    }
+    html += "</li>";
+    return html;
+  }
+
+  function renderChildren(nodes, needle, current) {
+    const parts = [];
+    const leaves = [];
+    const flush = () => {
+      if (!leaves.length) return;
+      parts.push("<ul>");
+      parts.push(leaves.join(""));
+      parts.push("</ul>");
+      leaves.length = 0;
+    };
+    for (const node of nodes || []) {
+      if (!matches(node, needle)) continue;
+      if (node.type === "group") {
+        flush();
+        parts.push(renderGroup(node, needle, current));
+      } else {
+        leaves.push(renderArticle(node, current));
+      }
+    }
+    flush();
+    return parts.join("");
+  }
+
+  function renderGroup(node, needle, current) {
+    const open = !!(needle || containsId(node, current));
+    const cls = open ? "tree-group" : "tree-group collapsed";
+    return (
+      `<div class="${cls}">` +
+      `<div class="group-head">` +
+        `<button type="button" class="twist" aria-label="展开或收起"></button>` +
+        `<span>${escapeHtml(node.title)}</span>` +
+      `</div>` +
+      `<div class="group-body">${renderChildren(node.children, needle, current)}</div>` +
+      "</div>"
+    );
+  }
+
+  function renderTree(filter) {
+    const needle = (filter || "").trim().toLowerCase();
+    const current = parseHash().id;
+    const html = [];
+    for (const vol of W.volumes) {
+      if (needle && !matches({ type: "group", children: vol.tree }, needle) && vol.id !== current) {
+        continue;
+      }
+      const open = !!(needle || containsId({ type: "group", children: vol.tree }, current) || vol.id === current);
+      html.push(`<div class="vol${open ? "" : " collapsed"}" data-vol="${vol.id}">`);
+      html.push(
+        `<div class="vol-head">` +
+          `<button type="button" class="twist" aria-label="展开或收起"></button>` +
+          `<a class="${vol.id === current ? "active" : ""}" href="#/${vol.id}">${escapeHtml(vol.title)}</a>` +
+        `</div>`
+      );
+      html.push(`<div class="vol-body">${renderChildren(vol.tree, needle, current)}</div>`);
+      html.push("</div>");
+    }
+    tree.innerHTML = html.join("") || '<p class="empty">没有匹配的篇目</p>';
   }
 
   function setPager(id) {
@@ -122,14 +187,18 @@
       return;
     }
     article.innerHTML = a.html;
-    crumb.textContent = a.volume + "  /  " + a.title;
+    const trail = (a.trail || []).join("  /  ");
+    crumb.textContent = [a.volume, trail, a.title].filter(Boolean).join("  /  ");
     document.title = a.title + " · " + W.title;
     setPager(id);
     renderTree(q.value);
     const active = tree.querySelector("a.active");
     if (active) active.scrollIntoView({ block: "nearest" });
     if (heading) {
-      const el = document.getElementById(heading) || article.querySelector("#" + CSS.escape(heading));
+      const decoded = decodeURIComponent(heading);
+      const el =
+        document.getElementById(decoded) ||
+        article.querySelector("#" + CSS.escape(decoded));
       if (el) el.scrollIntoView({ block: "start" });
       else scroll.scrollTop = 0;
     } else {
@@ -152,9 +221,11 @@
   }
 
   tree.addEventListener("click", (e) => {
-    const btn = e.target.closest(".vol-btn");
-    if (btn) {
-      btn.parentElement.classList.toggle("collapsed");
+    const twist = e.target.closest(".twist");
+    if (twist) {
+      e.preventDefault();
+      const wrap = twist.closest(".vol, .tree-group");
+      if (wrap) wrap.classList.toggle("collapsed");
     }
   });
 

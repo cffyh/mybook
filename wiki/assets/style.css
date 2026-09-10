@@ -10,7 +10,7 @@
   --accent-2: #8a6a32;
   --prose: #1c1915;
   --shadow: 0 1px 0 rgba(28, 25, 21, 0.06);
-  --sidebar-w: 300px;
+  --sidebar-w: 320px;
 }
 
 html[data-theme="dark"] {
@@ -105,31 +105,72 @@ html, body {
   margin: 6px 0 10px;
 }
 
-.vol-btn {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: 0;
-  color: var(--text);
-  font: 600 13px/1.4 system-ui, sans-serif;
-  padding: 6px 8px;
-  cursor: pointer;
+.vol-head,
+.group-head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   border-radius: 6px;
 }
 
-.vol-btn:hover { background: var(--bg-hover); }
+.vol-head:hover,
+.group-head:hover { background: var(--bg-hover); }
 
-.vol ul {
+.vol-head a,
+.group-head span {
+  flex: 1;
+  min-width: 0;
+  color: var(--text);
+  text-decoration: none;
+  padding: 5px 6px 5px 0;
+  font: 600 13px/1.4 system-ui, sans-serif;
+}
+
+.vol-head a.active {
+  background: var(--bg-active);
+  border-radius: 6px;
+}
+
+.twist {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.twist::before { content: "▾"; font-size: 11px; }
+.vol.collapsed > .vol-head .twist::before,
+.tree-group.collapsed > .group-head .twist::before { content: "▸"; }
+
+.twist:hover { background: var(--bg-active); }
+
+.vol-body { padding: 0 0 4px 8px; }
+
+.vol.collapsed > .vol-body { display: none; }
+
+.tree-group { margin: 2px 0 4px; }
+
+.group-body { padding-left: 10px; }
+
+.tree-group.collapsed > .group-body { display: none; }
+
+.vol ul,
+.group-body ul {
   list-style: none;
   margin: 2px 0 0;
-  padding: 0 0 0 8px;
+  padding: 0 0 0 6px;
 }
 
 .vol li a {
   display: block;
   color: var(--text-dim);
   text-decoration: none;
-  padding: 5px 8px;
+  padding: 4px 8px;
   border-radius: 6px;
   line-height: 1.45;
 }
@@ -142,7 +183,16 @@ html, body {
   font-weight: 600;
 }
 
-.vol.collapsed ul { display: none; }
+ul.heads {
+  padding: 0 0 6px 12px;
+}
+
+ul.heads a.head {
+  font-size: 12px;
+  font-weight: 400;
+  padding: 3px 8px;
+  color: var(--text-dim);
+}
 
 .main {
   display: flex;
