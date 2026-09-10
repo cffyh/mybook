@@ -5,3 +5,6 @@
 
 # macOS
 .DS_Store
+
+# EPUB build byproduct (cover is embedded in the .epub)
+ebook/cover.png

@@ -1,0 +1,4 @@
+markdown>=3.7
+beautifulsoup4>=4.12
+lxml>=5.0
+pillow>=10.0
