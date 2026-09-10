@@ -303,7 +303,7 @@ def home_html(articles: list[dict]) -> str:
     return f"""
 <div class="home-hero">
   <h1>以小控大</h1>
-  <p>工厂文集的离线阅读页。侧栏点一篇即达，不必翻页；J / K 相邻篇，/ 搜索。</p>
+  <p>我的文集的离线阅读页。侧栏点一篇即达，不必翻页；J / K 相邻篇，/ 搜索。</p>
 </div>
 <p class="no-indent">往下追到世界与思维的底层，往上接到人如何在现实里变强。两端之间是同一套机制在不同域显影。</p>
 <h2>四条入口</h2>
