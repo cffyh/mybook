@@ -24,7 +24,6 @@ CSS_PATH = EBOOK_DIR / "stylesheet.css"
 FONT_PATH = Path("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc")
 
 BOOK_TITLE = "以小控大"
-BOOK_SUBTITLE = "工厂文集：从世界底层到人如何变强"
 BOOK_AUTHOR = "cffyh"
 LANGUAGE = "zh-CN"
 BOOK_ID = "urn:uuid:7c3e9b1a-4f2d-4a8e-9c11-a6d0e8f4b210"
