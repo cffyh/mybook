@@ -30,7 +30,7 @@ LANGUAGE = "zh-CN"
 BOOK_ID = "urn:uuid:7c3e9b1a-4f2d-4a8e-9c11-a6d0e8f4b210"
 PUBLISHER = "mybook"
 
-SKIP_DIRS = {".git", "backup", "example", "ebook"}
+SKIP_DIRS = {".git", "backup", "example", "ebook", "wiki"}
 SKIP_SUFFIXES = {".docx", ".zip", ".xlsx", ".pdf", ".png", ".DS_Store"}
 SKIP_NAMES = {
     "书稿定位与查漏策略.md",
@@ -342,11 +342,24 @@ EPUB_NS = "http://www.idpf.org/2007/ops"
 H_NS = {"h": XHTML_NS}
 
 
+def _format_href(dest: str, frag: str, link_kind: str) -> str:
+    if link_kind == "hash":
+        dest = dest.replace(".xhtml", "").replace(".html", "")
+        href = "#/" + dest.lstrip("#/")
+        if frag:
+            href += "/" + frag.lstrip("#")
+        return href
+    if frag:
+        return dest + "#" + frag
+    return dest
+
+
 def rewrite_links(
     root_el: etree._Element,
     src: Path,
     path_map: dict[str, str],
     dir_map: dict[str, str],
+    link_kind: str = "file",
 ) -> None:
     for a in root_el.xpath(".//h:a", namespaces=H_NS):
         href = a.get("href")
@@ -374,17 +387,28 @@ def rewrite_links(
             if str(cand) in dir_map:
                 target_dir = cand
         if target_file is not None:
-            new = path_map[str(target_file)]
-            if frag:
-                new += "#" + frag
+            new = _format_href(path_map[str(target_file)], frag, link_kind)
             a.set("href", new)
         elif target_dir is not None:
-            a.set("href", dir_map[str(target_dir)])
+            a.set("href", _format_href(dir_map[str(target_dir)], "", link_kind))
         elif path_part.endswith((".md", ".html", ".htm", ".docx")) or path_part.endswith("/"):
             a.attrib.pop("href", None)
             a.tag = f"{{{XHTML_NS}}}span"
             cls = a.get("class")
             a.set("class", (cls + " internal-ref").strip() if cls else "internal-ref")
+
+
+def inner_html(root_el: etree._Element) -> str:
+    parts: list[str] = []
+    if root_el.text:
+        parts.append(html_lib.escape(root_el.text))
+    for child in root_el:
+        parts.append(
+            etree.tostring(child, method="html", encoding="unicode", with_tail=True)
+        )
+    html = "".join(parts)
+    html = re.sub(r'\sxmlns(?::[a-z]+)?="[^"]*"', "", html)
+    return html
 
 
 def serialize_xhtml(html_el: etree._Element) -> str:

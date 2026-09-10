@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>以小控大 · 离线文集</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <a href="#/">以小控大</a>
+        <span class="sub">离线文集 · 点侧栏即达</span>
+      </div>
+      <div class="search">
+        <input id="q" type="search" placeholder="搜索篇名、小节…  /" autocomplete="off">
+      </div>
+      <nav class="tree" id="tree"></nav>
+    </aside>
+    <div class="main">
+      <header class="top">
+        <button class="icon-btn" id="toggle-sidebar" title="显示/隐藏目录">目录</button>
+        <div class="crumb" id="crumb">文集</div>
+        <nav class="pager">
+          <a id="prev" href="#/">上一篇</a>
+          <a id="next" href="#/">下一篇</a>
+        </nav>
+        <button class="icon-btn" id="theme" title="切换主题">主题</button>
+        <span class="help">J / K 上一下一篇</span>
+      </header>
+      <div class="scroll" id="scroll">
+        <article class="prose" id="article">正在载入文集…</article>
+        <div class="pager-bottom">
+          <a id="prev2" href="#/">← 上一篇</a>
+          <a id="next2" href="#/">下一篇 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="assets/content.js"></script>
+  <script src="assets/wiki.js"></script>
+</body>
+</html>

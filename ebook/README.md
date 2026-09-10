@@ -1,8 +1,8 @@
-# 工厂文集 EPUB
+# 工厂文集
 
-从仓库里的成熟文章生成一本 EPUB 3 电子书。
+从仓库里的成熟文章生成阅读成品。
 
-## 生成
+## EPUB（阅读器 / 手机）
 
 ```bash
 python3 -m pip install -r ebook/requirements.txt
@@ -10,6 +10,16 @@ python3 ebook/build_epub.py
 ```
 
 产出：`ebook/以小控大——工厂文集.epub`
+
+## 离线 wiki（电脑，推荐）
+
+点侧栏即达，正文连续滚动，没有翻页。
+
+```bash
+python3 ebook/build_wiki.py --serve
+```
+
+打开 http://127.0.0.1:8765/ 。站点在 `wiki/`。快捷键：`/` 搜索，`J` / `K` 上下篇。
 
 ## 收录范围
 
