@@ -19,6 +19,7 @@
       "output": "dist/两极之间·全集（含原始笔记）.epub",
       "title": "两极之间 · 全集",
       "subtitle": "书稿文集，附原始笔记全编",
+      "identifier": "urn:uuid:2b7d94a1-5c38-5e7f-8d16-4a0f9c2e6b53",
       "volumes": ["daodu", "zhishilun", "lixing", "zhuanhua", "zonglun", "quanji", "guanjian", "zhaji", "changwen", "fulu", "yuanbi"],
       "ignore": ["example/"]
     }
