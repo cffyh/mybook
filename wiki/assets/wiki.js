@@ -94,9 +94,14 @@
         node.removeAttribute("aria-disabled");
         node.href = "#/" + target;
         const t = byId[target];
-        node.textContent = (el.startsWith("prev") ? "← " : "") + t.title + (el.startsWith("next") ? " →" : "");
-        if (el === "prev" || el === "prev2") node.textContent = "← " + t.title;
-        if (el === "next" || el === "next2") node.textContent = t.title + " →";
+        if (el === "prev" || el === "next") {
+          node.textContent = el === "prev" ? "上一篇" : "下一篇";
+          node.title = t.title;
+        } else if (el === "prev2") {
+          node.textContent = "← " + t.title;
+        } else {
+          node.textContent = t.title + " →";
+        }
       }
     }
   }
