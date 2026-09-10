@@ -1,0 +1,448 @@
+@charset "utf-8";
+
+/* 中文正文的排版基准。不内嵌字体：CJK 字体动辄十几兆，而阅读器自带的中文字体
+   通常比塞进书里的更合用；这里只给一份字体族的优先级。 */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC",
+    "STSong", "SimSun", "宋体", Georgia, serif;
+  line-height: 1.8;
+  margin: 0;
+  padding: 0 1em;
+  color: #1a1a1a;
+  text-align: justify;
+  -epub-text-justify: inter-ideograph;
+  text-justify: inter-ideograph;
+  widows: 2;
+  orphans: 2;
+}
+
+/* ---------- 标题 ---------- */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC",
+    "Heiti SC", "Microsoft YaHei", "黑体", Helvetica, sans-serif;
+  line-height: 1.4;
+  text-align: left;
+  page-break-after: avoid;
+  break-after: avoid;
+  text-indent: 0;
+}
+
+h1 {
+  font-size: 1.5em;
+  margin: 1.2em 0 1.6em;
+  letter-spacing: 0.05em;
+}
+
+h2 {
+  font-size: 1.2em;
+  margin: 2em 0 0.8em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid #ddd8cd;
+}
+
+h3 {
+  font-size: 1.08em;
+  margin: 1.6em 0 0.6em;
+}
+
+h4, h5, h6 {
+  font-size: 1em;
+  margin: 1.3em 0 0.5em;
+  color: #333;
+}
+
+/* ---------- 正文 ---------- */
+
+p {
+  margin: 0 0 0.2em;
+  text-indent: 2em;
+}
+
+/* 标题、引用、列表之后的第一段不缩进，符合中文书籍惯例 */
+h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p,
+blockquote + p, ul + p, ol + p, table + p, hr + p,
+.table-wrap + p, .lead + p {
+  text-indent: 2em;
+}
+
+p.no-indent, p.lead, p.subtitle, p.chapter-no, p.byline, p.math-block {
+  text-indent: 0;
+}
+
+strong, b {
+  font-weight: 700;
+}
+
+em, i {
+  font-style: normal;
+  /* 中文斜体不美观，改用着重号；不支持的阅读器会退回普通字形 */
+  -epub-text-emphasis: dot;
+  text-emphasis: filled dot;
+  -webkit-text-emphasis: filled dot;
+}
+
+a {
+  color: #1f5673;
+  text-decoration: none;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: #ddd8cd;
+  margin: 2em auto;
+  width: 40%;
+}
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 0.2em 0 0.2em 1em;
+  border-left: 3px solid #cfc9ba;
+  color: #444;
+}
+
+blockquote p {
+  text-indent: 0;
+  margin-bottom: 0.6em;
+}
+
+ul, ol {
+  margin: 1em 0;
+  padding-left: 1.8em;
+}
+
+li {
+  margin-bottom: 0.4em;
+}
+
+li p {
+  text-indent: 0;
+  margin-bottom: 0.4em;
+}
+
+code {
+  font-family: "DejaVu Sans Mono", "Menlo", "Consolas", monospace;
+  font-size: 0.9em;
+  background: #f2f0ea;
+  padding: 0 0.2em;
+  border-radius: 2px;
+}
+
+pre {
+  font-family: "DejaVu Sans Mono", "Menlo", "Consolas", monospace;
+  font-size: 0.82em;
+  line-height: 1.5;
+  background: #f6f4ee;
+  border: 1px solid #e5e1d6;
+  border-radius: 3px;
+  padding: 0.8em;
+  margin: 1.2em 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: left;
+  text-indent: 0;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 1em;
+}
+
+/* ---------- 表格 ---------- */
+
+.table-wrap {
+  margin: 1.4em 0;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.86em;
+  line-height: 1.6;
+}
+
+th, td {
+  border: 1px solid #d8d3c6;
+  padding: 0.4em 0.6em;
+  text-align: left;
+  text-indent: 0;
+  vertical-align: top;
+}
+
+th {
+  background: #f2f0ea;
+  font-weight: 700;
+}
+
+td.ta-center, th.ta-center { text-align: center; }
+td.ta-right, th.ta-right { text-align: right; }
+td.ta-left, th.ta-left { text-align: left; }
+
+/* ---------- 公式与图 ---------- */
+
+.math {
+  font-family: "Latin Modern Math", "STIX Two Math", "Cambria Math", Georgia, serif;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.math sub, .math sup {
+  font-style: normal;
+}
+
+p.math-block {
+  text-align: center;
+  margin: 1.2em 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.figure-missing {
+  color: #8a8478;
+  font-size: 0.9em;
+}
+
+/* 目标不在本书内的链接，只留文字 */
+.link-plain {
+  border-bottom: 1px dotted #c3bcac;
+}
+
+/* ---------- 书名页 ---------- */
+
+body.title-page {
+  text-align: center;
+  padding-top: 22%;
+}
+
+.title-page .book-title {
+  font-size: 2.4em;
+  letter-spacing: 0.22em;
+  margin: 0 0 0.6em;
+  border: 0;
+  text-align: center;
+}
+
+.title-page .book-subtitle {
+  font-size: 1em;
+  color: #555;
+  letter-spacing: 0.08em;
+  margin: 0 0 3.5em;
+  text-indent: 0;
+}
+
+.title-page .book-author {
+  font-size: 1.05em;
+  letter-spacing: 0.3em;
+  text-indent: 0;
+}
+
+.title-page .book-imprint {
+  margin-top: 5em;
+  font-size: 0.82em;
+  color: #8a8478;
+  letter-spacing: 0.1em;
+  text-indent: 0;
+}
+
+/* ---------- 封面 ---------- */
+
+body.cover-page {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+body.cover-page img {
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+}
+
+/* ---------- 分卷页 ---------- */
+
+body.volume-page {
+  padding-top: 16%;
+}
+
+.volume-page .volume-label {
+  text-align: center;
+  color: #8a8478;
+  letter-spacing: 0.32em;
+  font-size: 0.82em;
+  text-indent: 0;
+  margin: 0 0 1.2em;
+}
+
+.volume-page .volume-title {
+  text-align: center;
+  font-size: 1.9em;
+  letter-spacing: 0.14em;
+  border: 0;
+  margin: 0 0 0.5em;
+}
+
+.volume-page .volume-subtitle {
+  text-align: center;
+  color: #8a8478;
+  letter-spacing: 0.16em;
+  font-size: 0.88em;
+  text-indent: 0;
+  margin: 0 0 2.8em;
+}
+
+.volume-page .volume-intro {
+  text-indent: 2em;
+  color: #3a3a3a;
+  margin-bottom: 2.4em;
+}
+
+.volume-page .volume-contents {
+  border-top: 1px solid #ddd8cd;
+  padding-top: 1.2em;
+  font-size: 0.9em;
+}
+
+.volume-page .volume-contents ol,
+.volume-page .volume-contents ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.4em 0;
+}
+
+.volume-page .volume-contents > ol > li {
+  margin-bottom: 0.5em;
+}
+
+.volume-page .volume-contents .group-name {
+  color: #8a8478;
+  letter-spacing: 0.12em;
+  margin: 1em 0 0.3em;
+}
+
+.volume-page .volume-contents .group-name + ol {
+  padding-left: 1em;
+}
+
+/* ---------- 篇首 ---------- */
+
+.article-meta {
+  color: #9a9488;
+  font-size: 0.78em;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-indent: 0;
+  margin: 0 0 0.4em;
+}
+
+h1.article-title {
+  text-align: center;
+  font-size: 1.45em;
+  letter-spacing: 0.08em;
+  margin: 0.2em 0 2em;
+}
+
+.article-source {
+  margin-top: 3em;
+  padding-top: 0.8em;
+  border-top: 1px solid #eae6dc;
+  color: #a8a296;
+  font-size: 0.74em;
+  text-indent: 0;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+/* ---------- 目录页 ---------- */
+
+body.nav-page ol {
+  list-style: none;
+  padding-left: 1em;
+}
+
+body.nav-page > section > h1 {
+  text-align: center;
+  letter-spacing: 0.3em;
+}
+
+body.nav-page nav > ol {
+  padding-left: 0;
+}
+
+body.nav-page nav > ol > li {
+  margin: 1.1em 0 0.4em;
+  font-weight: 700;
+}
+
+body.nav-page nav > ol > li > ol {
+  font-weight: 400;
+  font-size: 0.94em;
+}
+
+/* ---------- 版本记录页 ---------- */
+
+body.colophon-page {
+  padding-top: 8%;
+}
+
+.colophon-page h1 {
+  text-align: center;
+  letter-spacing: 0.28em;
+  font-size: 1.3em;
+}
+
+.colophon-page dl {
+  margin: 2em 0;
+  font-size: 0.9em;
+}
+
+.colophon-page dt {
+  font-weight: 700;
+  color: #8a8478;
+  margin-top: 1em;
+  letter-spacing: 0.1em;
+}
+
+.colophon-page dd {
+  margin: 0.2em 0 0 0;
+}
+
+/* ---------- 原始 HTML 稿沿用的类名 ---------- */
+
+.chapter-no {
+  text-align: center;
+  color: #8a8478;
+  letter-spacing: 0.3em;
+  font-size: 0.85em;
+  text-indent: 0;
+  margin: 0 0 1.5em;
+}
+
+p.lead {
+  text-align: center;
+  color: #555;
+  font-size: 0.95em;
+  margin-bottom: 2em;
+}
+
+p.subtitle {
+  text-align: center;
+  color: #8a8478;
+  font-size: 0.88em;
+  margin-bottom: 2em;
+}
+
+p.indent {
+  text-indent: 2em;
+}
