@@ -9,4 +9,7 @@
 # EPUB / wiki build byproducts
 ebook/cover.png
 ebook/__pycache__/
+
+# Python
 __pycache__/
+*.py[cod]
