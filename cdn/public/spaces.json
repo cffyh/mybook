@@ -1,0 +1,19 @@
+{
+  "title": "知识总库",
+  "spaces": [
+    {
+      "id": "mybook",
+      "title": "以小控大",
+      "subtitle": "文集总库",
+      "blurb": "已成卷的思考：世界如何运转、认识、学习、做事与心力。",
+      "href": "/s/mybook/"
+    },
+    {
+      "id": "workbench",
+      "title": "工作台",
+      "subtitle": "进行中的笔记",
+      "blurb": "未入卷的草稿、实验和正在长出来的条目。",
+      "href": "/s/workbench/"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>登录 · 知识总库</title>
+  <link rel="stylesheet" href="/assets/vault.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="kicker">PERSONAL KNOWLEDGE VAULT</div>
+    <h1>知识总库</h1>
+    <p class="lead">验证码会发到站长邮箱。输入 6 位数字后进入空间。</p>
+    <div class="card">
+      <label for="code">验证码</label>
+      <input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••">
+      <div class="row">
+        <button class="ghost" id="send" type="button">发送验证码</button>
+        <button id="enter" type="button">进入</button>
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+  <script src="/assets/login.js"></script>
+</body>
+</html>

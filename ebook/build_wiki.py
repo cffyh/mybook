@@ -7,6 +7,7 @@ import argparse
 import html as html_lib
 import json
 import re
+import shutil
 import sys
 from datetime import date
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -113,7 +114,7 @@ def section_trail(ch: ep.Chapter, vol: ep.Volume) -> list[str]:
             "三句内核——认一个系统、世界怎么动、人凭什么下手.md",
             "工程技术——着地、积累、外衣与内核.md",
         }:
-            return ["着地"]
+            return ["踏地"]
         if "/点/" in rel:
             return ["点"]
         if "/演绎/" in rel:
@@ -168,7 +169,7 @@ def section_trail(ch: ep.Chapter, vol: ep.Volume) -> list[str]:
 
 BOOK5_GROUP_ORDER = [
     "总论",
-    "着地",
+    "踏地",
     "控制论与机制",
     "生存空间",
     "需求、目标与差距",
@@ -312,7 +313,7 @@ def home_html(articles: list[dict]) -> str:
   <a class="card" href="#/{p1}"><b>先立合题</b><span>以有限应对无限 → 逻辑 → 实事求是 → 实践 → 小与大</span></a>
   <a class="card" href="#/{p2}"><b>先立思维与学习</b><span>知识论导论 → 知识 → 理性 → 思维</span></a>
   <a class="card" href="#/{p3}"><b>直接走向交易</b><span>控制论奠基 → 目标差距 → 点 → 生存空间</span></a>
-  <a class="card" href="#/{p4}"><b>从小与大走进闭环</b><span>底层视角如何闭环，再着地到工程技术</span></a>
+  <a class="card" href="#/{p4}"><b>从小与大走进闭环</b><span>底层视角如何闭环，再接到工程技术</span></a>
 </div>
 <p class="no-indent">三本成品书是同一批素材的三种切法。后卷与前卷会有主题回响，用侧栏搜篇名即可。</p>
 """
@@ -427,6 +428,24 @@ def write_wiki() -> None:
             print(" ", ep.rel(p))
 
 
+def sync_cdn() -> None:
+    dest = ROOT / "cdn" / "public" / "s" / "mybook"
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "assets").mkdir(exist_ok=True)
+    shutil.copy2(WIKI_DIR / "index.html", dest / "index.html")
+    for name in ("style.css", "wiki.js", "content.js"):
+        src = WIKI_DIR / "assets" / name
+        if src.exists():
+            shutil.copy2(src, dest / "assets" / name)
+    skin = ROOT / "cdn" / "public" / "s" / "workbench" / "assets"
+    if skin.exists():
+        for name in ("style.css", "wiki.js"):
+            src = WIKI_DIR / "assets" / name
+            if src.exists():
+                shutil.copy2(src, skin / name)
+    print(f"synced wiki → {dest}")
+
+
 def serve(port: int) -> None:
     class WikiHandler(SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
@@ -442,9 +461,12 @@ def main() -> None:
     parser.add_argument("--serve", action="store_true", help="build then serve on :8765")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--no-build", action="store_true")
+    parser.add_argument("--sync-cdn", action="store_true", help="copy wiki into cdn/public/s/mybook")
     args = parser.parse_args()
     if not args.no_build:
         write_wiki()
+    if args.sync_cdn:
+        sync_cdn()
     if args.serve:
         serve(args.port)
 

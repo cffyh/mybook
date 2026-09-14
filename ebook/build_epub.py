@@ -133,12 +133,16 @@ BOOK5_ROOT_GROUPS = [
         [
             "根据地的成立条件——李自成反例与三前提一时机.md",
             "毛泽东两段论述——实事求是·控制闭环·转化框架的合流.md",
-            "灯塔、继承与消化——从菲尔兹奖公开信看数学如何长.md",
-            "一套模型，许多个自己——系统、重建，与差异从哪来.md",
-            "渗透、推高与自改进——从布林一场对谈看骨架、偏差与撞不动的墙.md",
-            "内驱力是产物，不是前提——小孩的动力与外加结构.md",
         ],
     ),
+]
+
+# 书稿 5 根目录成文，但不属于「根据地与合流」；wiki / EPUB 挂卷六关键文章。
+KEY_FROM_BOOK5 = [
+    "灯塔、继承与消化——从菲尔兹奖公开信看数学如何长.md",
+    "一套模型，许多个自己——系统、重建，与差异从哪来.md",
+    "渗透、推高与自改进——从布林一场对谈看骨架、偏差与撞不动的墙.md",
+    "内驱力是产物，不是前提——小孩的动力与外加结构.md",
 ]
 
 JY_ROOT_ORDER = [
@@ -630,6 +634,7 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
 
     key_dir = ROOT / "关键文章"
     key_chapters: list[Path] = []
+    key_chapters.extend(ordered_existing(ROOT / "书稿 5", KEY_FROM_BOOK5))
     root_key = sorted(
         [p for p in key_dir.glob("*.md")],
         key=lambda p: p.name,

@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "knowledge-vault": {
+      "url": "https://i.fotira.com.br/mcp",
+      "headers": {
+        "Authorization": "Bearer 替换为 MCP_TOKEN"
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "workspace": "云枢",
+  "roots": [
+    {
+      "id": "0c8eb9f914b34e579323e47036377dce",
+      "title": "我的工作台",
+      "children": [
+        "33057bbfad7e45be9f5c82cfa74723a4",
+        "3b91d78be6fc49caaff50ac42fb7ae03",
+        "a06ff9e7d73c453ba912a60c6487b5c0",
+        "d12f024007a041d9b42b8d82a16ceff0",
+        "5271b8cab1d9484dafbd7fd6e61243bd"
+      ]
+    },
+    {
+      "id": "3d06b8ce627780e9aef7c0e3f8458f41",
+      "title": "技术笔记"
+    }
+  ],
+  "skip": [
+    "37f6b8ce627780f09154f74438fb9e63",
+    "37a6b8ce6277808e93dcf0e7ebbe2b52"
+  ],
+  "skip_reason": "账号、密钥、运营依赖，不发布到 CDN"
+}

@@ -1,0 +1,502 @@
+#!/usr/bin/env python3
+"""Compile workbench digest articles into wiki content.js."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+DEST = ROOT.parent / "cdn" / "public" / "s" / "workbench" / "assets" / "content.js"
+
+
+def h(s: str) -> str:
+    return (
+        s.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )
+
+
+def card(aid: str, title: str, blurb: str) -> str:
+    return (
+        f'<a class="card" href="#/{aid}"><b>{h(title)}</b>'
+        f"<span>{h(blurb)}</span></a>"
+    )
+
+
+ARTICLES: list[dict] = [
+    {
+        "id": "wb-home",
+        "title": "工作台",
+        "volume": "工作台",
+        "trail": [],
+        "headings": [],
+        "html": (
+            '<div class="home-hero"><h1>工作台</h1>'
+            "<p>云枢里正在长的部分。下面是 Notion「我的工作台」的第一波摘要，不是成稿。</p></div>"
+            '<p class="no-indent">成卷文字在「以小控大」。这里只留判断、约束和还没入卷的线索。</p>'
+            "<h2>五条入口</h2><div class='cards'>"
+            + card("biz-core", "事业与增长", "不进大组织；出海搭车 + 轻资产产品化")
+            + card("hk-plan", "香港与职业", "签证连续性是承重墙；受雇打底")
+            + card("mybook", "学习与 mybook", "分 topic 出版；人挑问题，AI 仿写")
+            + card("agent-os", "个人 Agent OS", "注意力分配，而不是再堆一个笔记库")
+            + card("graphify", "技术笔记", "Graphify：架构图谱，不是编译器")
+            + "</div>"
+        ),
+    },
+    {
+        "id": "biz-core",
+        "title": "核心选择",
+        "volume": "01 · 事业与增长",
+        "trail": ["判断"],
+        "headings": [],
+        "html": (
+            "<h1>核心选择</h1>"
+            '<p class="no-indent">两条约束，后面所有机会清单都挂在这上面。</p>'
+            "<ol><li>不适合大组织，走差异化竞争。</li>"
+            "<li>创业，与英语学习、适应新加坡 / 香港等海外工作，是同一盘棋，不是两件无关的事。</li></ol>"
+        ),
+    },
+    {
+        "id": "biz-method",
+        "title": "零、方法论",
+        "volume": "01 · 事业与增长",
+        "trail": ["判断"],
+        "headings": [{"id": "dirs", "text": "方向篮子"}, {"id": "loop", "text": "需求循环"}],
+        "html": (
+            "<h1>零、方法论</h1>"
+            '<p class="no-indent">先养一篮子方向，再让证据淘汰。任何单条线（包括正在赚钱的）都不能当救命稻草——巴西充电桩只是篮子里的一种形状，不是信仰。</p>'
+            "<h2 id='dirs'>方向篮子</h2>"
+            "<ul><li><b>搜索流量</b>：需求强、真、频繁；证件照是其中一个 case。在巴西用 Pix 付费，就是 CNPJ 变现。</li>"
+            "<li><b>高价值人群</b>：跨境工作者。</li>"
+            "<li><b>能干活的 agent</b>：L1 垂直蓝领 → L2 应用工程 → L3 生产化部署。巴西法律 / 会计刚需从具体搜索问题切入，不从「做个平台」切入。</li>"
+            "<li><b>niche-funnel</b>：最小流量成本，在最窄缝隙里转化。</li>"
+            "<li><b>AI 特色应用</b>：个人档案 OS（拍照 × AI × 基础需求）比循规蹈矩的 idea 更接近「新方法」。</li></ul>"
+            "<h2 id='loop'>需求循环</h2>"
+            "<p>抓住刚性需求，用新方法做新体验；广告、社群、内容低成本运营。"
+            "商品视角：新生需求给时间窗口，新方法给 10x 体验。创业靠新市场，维护靠证明—信任—利益分配。</p>"
+            "<p>证件照全球展开的梯队：一巴西 / 日本；二土耳其、法国、越南、中东、意大利；"
+            "三西语拉美；提前布局印度、印尼。</p>"
+            "<h2 id='use'>用法</h2>"
+            "<p>每周只问三句：篮子里有没有至少三条还活着的线？哪一条这周补了证据？哪一条该降级，而不是加资源硬扛？</p>"
+        ),
+    },
+    {
+        "id": "biz-global",
+        "title": "出海全球化 2.0",
+        "volume": "01 · 事业与增长",
+        "trail": ["判断"],
+        "headings": [
+            {"id": "layers", "text": "出海三层"},
+            {"id": "person", "text": "个人机会"},
+            {"id": "fit", "text": "对你的落点"},
+        ],
+        "html": (
+            "<h1>出海全球化 2.0</h1>"
+            '<p class="no-indent">现在的出海不是外贸，也不是早年海外建厂。'
+            "企业把技术、供应链、品牌一起搬出去做跨国经营。个人的机会不在建厂，而在搭这趟车，做全球可交付的事。</p>"
+            "<h2 id='layers'>出海三层</h2>"
+            "<ul><li>传统外贸：货出去，人厂研发留国内，OEM。</li>"
+            "<li>早年建厂 / 并购：压成本或买资源，核心仍在国内。</li>"
+            "<li>当前一轮：完整产业能力本地化；品牌、标准、数字服务一并输出。</li></ul>"
+            "<h2 id='person'>个人机会（按资产从轻到重）</h2>"
+            "<ol><li>卖铲子：合规财税、增长投放、供应链撮合、跨境小工具。</li>"
+            "<li>数字产品：SaaS、垂直 AI、内容、开源商业化。</li>"
+            "<li>轻贸易：DTC 微品牌、信息差复制到新兴市场。</li>"
+            "<li>搭大企业便车：本地配套与人才中介（最重）。</li></ol>"
+            "<h2 id='fit'>对你的落点</h2>"
+            "<p>已有资产：AI 工程、Fotira 证件照、巴西切入、跨境工作者研究。"
+            "最匹配的是：证件照 / 个人档案 OS 的多国刚需矩阵；巴西合规财税 AI；跨境工作者工具集；实物出海先做后赋能。</p>"
+            "<p>个人不要学大企业全链本地化。先选轻、可远程、可产品化；合规敏感度低；多国对冲。</p>"
+        ),
+    },
+    {
+        "id": "biz-evidence",
+        "title": "五层证据链",
+        "volume": "01 · 事业与增长",
+        "trail": ["方法"],
+        "headings": [{"id": "five", "text": "五层"}, {"id": "mvp", "text": "最短闭环"}],
+        "html": (
+            "<h1>独立产品需求验证：五层证据链</h1>"
+            '<p class="no-indent">看新品、看热度只证明「有人做了、有人看」，不证明「值得做、能赚钱」。'
+            "五层接上才进 MVP；哪层断了就先别写代码。</p>"
+            "<h2 id='five'>五层</h2>"
+            "<ol><li>先找变化，不要先找产品（能力突然变便宜 / 变快）。</li>"
+            "<li>去用户抱怨处，记：谁、什么任务、多久一次、做不好损失什么。</li>"
+            "<li>看钱：外包、标价、长期运营；热度不是购买意愿。</li>"
+            "<li>看搜索与分发：第一批用户从哪来。</li>"
+            "<li>最后拆产品旅程，找可切入的空位（一个人群 + 一个结果）。</li></ol>"
+            "<h2 id='mvp'>最短闭环</h2>"
+            "<p>明确人群与输出 → 单页生成 → 验证 / 队列 / 下载 → 限额与成本统计 → 案例页承接搜索 → 积分或优先级收费。"
+            "顺序：先需要，再找到人，再付钱，最后才优化推理成本。</p>"
+        ),
+    },
+    {
+        "id": "biz-smallteam",
+        "title": "小团队产品机会",
+        "volume": "01 · 事业与增长",
+        "trail": ["方法"],
+        "headings": [],
+        "html": (
+            "<h1>AI 时代小团队的产品机会</h1>"
+            '<p class="no-indent">to B 的壁垒是组织和关系，AI 削不掉，小团队进不去。'
+            "to C 的壁垒（开发、获客）正好能被 AI 和新分发跨过。机会是能上牌桌，不是稳赢。</p>"
+            "<p>个体户 SaaS 强依赖运营，但弱依赖运营团队：客单价养不起重销售，用户又不会自己摸索。"
+            "出路是把教育、答疑、陪跑装进产品。必须堆人才能转的生意，不适合小团队。</p>"
+        ),
+    },
+    {
+        "id": "biz-pending",
+        "title": "尚未摘要的事业页",
+        "volume": "01 · 事业与增长",
+        "trail": ["待补"],
+        "headings": [],
+        "html": (
+            "<h1>尚未摘要的事业页</h1>"
+            '<p class="no-indent">第一波只收判断和方法。下面这些仍在 Notion，下一波按「一篇一判断」补进工作台：</p>'
+            "<ul><li>一、从大众搜索流量到全球深度产品化</li>"
+            "<li>二、冷启动、Meta 扩量、KOL 合作</li>"
+            "<li>三、视频广告生产线</li>"
+            "<li>四、Google / Meta 广告</li>"
+            "<li>决策和进展记录 / 调研归档 / agent</li></ul>"
+        ),
+    },
+    {
+        "id": "hk-plan",
+        "title": "香港规划 · 死保目标",
+        "volume": "02 · 香港与职业",
+        "trail": ["约束"],
+        "headings": [
+            {"id": "must", "text": "两个死保"},
+            {"id": "school", "text": "入学"},
+            {"id": "visa", "text": "签证"},
+        ],
+        "html": (
+            "<h1>香港规划 · 死保目标</h1>"
+            '<p class="no-indent">孩子入学已收敛；你自己的落地与签证连续性才是战略承重墙。一切资格挂在你的签证上。</p>'
+            "<h2 id='must'>两个死保</h2>"
+            "<ol><li>在港站稳：稳定受雇打底，叠加增收，不单押创业。优才与保底工作已有。"
+            "上层二选一：冲高薪岗，或一般岗 + 独立产品。</li>"
+            "<li>两个孩子英语按剑桥体系不断线。EMI 入学试认英文，不认内地中考。</li></ol>"
+            "<h2 id='school'>入学</h2>"
+            "<p>领先方案：<b>2031 全家一起来</b>（2030 复核）。弟弟小六直升中一，哥哥内地初二后重读中二。"
+            "DSE 年份不变（哥 2036、弟 2037）。弟弟拿中一统一收生；哥哥仍是插班，卡点是英文。</p>"
+            "<p>学位总量：双非退潮与人才子女回填大致平衡，「有学上」不是主风险。好校永远挤，不能拿 Band 1 推断大盘。</p>"
+            "<h2 id='visa'>签证</h2>"
+            "<p>2031–2037 窗口 QMAS 必须不断。地基是受雇（合约 + 薪俸税 + MPF）。"
+            "早落地约 2033 永居，可在 DSE 前拆除「孩子身份绑工签」这个单点故障。</p>"
+        ),
+    },
+    {
+        "id": "hk-job",
+        "title": "香港技术岗求职",
+        "volume": "02 · 香港与职业",
+        "trail": ["动作"],
+        "headings": [{"id": "track", "text": "赛道"}, {"id": "steps", "text": "两步走"}],
+        "html": (
+            "<h1>香港技术岗求职策略</h1>"
+            '<p class="no-indent">把香港当「亚太金融科技 + 大湾区跨境数字化」枢纽来打，'
+            "不要走内地消费互联网大厂路线。标签：内地业务理解 + 香港 / 海外合规 + 多云架构。</p>"
+            "<h2 id='track'>赛道</h2>"
+            "<ul><li>P0：FinTech、网络安全。</li>"
+            "<li>P1：跨国企业亚太 IT。</li>"
+            "<li>P2：AI / 数据的应用层。</li>"
+            "<li>避开：本土 C 端、纯外包、把 Web3 当唯一赛道。</li></ul>"
+            "<p>90 天：锁两个方向、中英简历、实体全职投递、系统设计 + 合规场景 + 语言自我介绍。"
+            "Offer 确认合约 / MPF / 税单可开。</p>"
+            "<h2 id='steps'>两步走</h2>"
+            "<p>第一步先拿到稳定全职（签证、现金流、履历）。"
+            "稳住后再叠长期流量资产或深港双城——第一步没稳住不碰第二步。</p>"
+        ),
+    },
+    {
+        "id": "hk-skill",
+        "title": "职业技能",
+        "volume": "02 · 香港与职业",
+        "trail": ["清单"],
+        "headings": [],
+        "html": (
+            "<h1>职业技能</h1>"
+            '<p class="no-indent">五块，用来对照求职与作品集，还不是课程大纲。</p>'
+            "<ul><li>系统设计</li><li>代码编写</li><li>真实项目</li>"
+            "<li>领域业务认知</li><li>商业和用户</li></ul>"
+        ),
+    },
+    {
+        "id": "mybook",
+        "title": "mybook 计划",
+        "volume": "03 · 学习与思考",
+        "trail": ["出版"],
+        "headings": [],
+        "html": (
+            "<h1>mybook 计划</h1>"
+            "<ol><li>找到便宜的香港出版路径，所以可以先出书稿。</li>"
+            "<li>AI 辅助：人挑出问题，再给可模仿的好文字，用来抬质量。</li>"
+            "<li>按 topic 分册，避免互相牵扯。学科思维、以小控大、工程、商业、数学、理性；"
+            "以及钱学森、结构实在、教员等需要单独辨析的话题。</li>"
+            "<li>写 AI 时代需要的哲学和思想。</li></ol>"
+            '<p class="no-indent">成稿阅读在空间「以小控大」；本页只记出版策略。</p>'
+        ),
+    },
+    {
+        "id": "edu",
+        "title": "教育",
+        "volume": "03 · 学习与思考",
+        "trail": ["教育"],
+        "headings": [],
+        "html": (
+            "<h1>教育</h1>"
+            "<p>两根轴：竞争、挑战与任务；纯粹的好奇心。子页「英语」「数学」仍在 Notion，下一波再摘要。</p>"
+        ),
+    },
+    {
+        "id": "ops",
+        "title": "运营与收件箱",
+        "volume": "04 · 运营与收件箱",
+        "trail": [],
+        "headings": [],
+        "html": (
+            "<h1>运营与收件箱</h1>"
+            '<p class="no-indent">这一区在 Notion 里有「系统运营账号依赖」和「备忘」。'
+            "其中含账号与密钥，<b>不发布到 CDN</b>。需要时回 Notion 私人页查看。</p>"
+        ),
+    },
+    {
+        "id": "agent-os",
+        "title": "个人 Agent OS",
+        "volume": "05 · 个人 Agent OS",
+        "trail": [],
+        "headings": [
+            {"id": "star", "text": "北极星"},
+            {"id": "layers", "text": "四层"},
+            {"id": "rhythm", "text": "节律"},
+        ],
+        "html": (
+            "<h1>个人 Agent OS（100x）</h1>"
+            '<p class="no-indent">把「我一个人」变成「我 + 一队 agent」。这一层不产出业务成果，'
+            "只负责分配注意力、消灭重复、沉淀思考。</p>"
+            "<h2 id='star'>北极星</h2>"
+            "<p>每周把不少于 70% 清醒时间投到只有我能做的事：判断、创意、关系、下注。其余交给 agent 或流程。</p>"
+            "<h2 id='layers'>四层</h2>"
+            "<ul><li>输入：资讯、邮件、群聊 → 哪条真影响我。</li>"
+            "<li>调度：今天干什么、先干什么、什么不干。</li>"
+            "<li>执行：预处理与 SOP；对 agent 只说「去 / 改 / 停」。</li>"
+            "<li>沉淀：知识记忆与经验，避免下次重想。</li></ul>"
+            "<p>每条信息必须带「所以呢」和下一步。纠结的事强制截止日；到期未决 = 主动不决。</p>"
+            "<h2 id='rhythm'>节律</h2>"
+            "<p>日：早报三件事 + 夜报归档（≤10 分钟）。周：六维周报与一条剧本优化。"
+            "月：一篇可外发长文。季：方向重评。方向判断仍归方法论，这里只管每天执行。</p>"
+        ),
+    },
+    {
+        "id": "graphify",
+        "title": "Graphify",
+        "volume": "技术笔记",
+        "trail": [],
+        "headings": [
+            {"id": "what", "text": "它是什么"},
+            {"id": "code", "text": "代码侧"},
+            {"id": "fit", "text": "最强场景"},
+        ],
+        "html": (
+            "<h1>Graphify</h1>"
+            '<p class="no-indent">最强场景不是精确编译器分析，也不是通用文档 RAG，'
+            "而是给结构规范、依赖显式的中大型多语言仓库建一张可浏览的架构知识图谱。</p>"
+            "<h2 id='what'>它是什么</h2>"
+            "<p>流水线：扫描 → 代码 AST / 文档 LLM → 合并去重 → NetworkX → 多种导出。"
+            "边带 confidence（EXTRACTED / INFERRED / AMBIGUOUS）。默认无向图，方向另存。</p>"
+            "<h2 id='code'>代码侧</h2>"
+            "<p>Tree-sitter 或专用解析器抽局部事实，再按 import / 符号索引做跨文件重连。"
+            "这是保守静态解析，不是语言服务器。同名不唯一通常不连边。动态、反射、宏覆盖弱。</p>"
+            "<p>文档侧：Markdown / manifest 确定性抽取；PDF/Office 转文本后 LLM 抽概念。"
+            "没有 embedding 检索，<code>semantically_similar_to</code> 是模型写的边。</p>"
+            "<h2 id='fit'>最强 / 最弱</h2>"
+            "<p>最强：主流语言、导入清晰、命名相对唯一、要看模块与影响范围；代码旁有 ADR / README 时更有差异。"
+            "最弱：当精确 call graph、合规审计、自动重构、扫描无 OCR 的 PDF 用。</p>"
+        ),
+    },
+]
+
+
+VOLUMES = [
+    {
+        "id": "wb-home",
+        "title": "工作台",
+        "tree": [
+            {"type": "article", "id": "biz-core", "title": "核心选择", "headings": []},
+            {
+                "type": "article",
+                "id": "hk-plan",
+                "title": "香港规划 · 死保目标",
+                "headings": [{"id": "must", "text": "两个死保"}],
+            },
+            {"type": "article", "id": "mybook", "title": "mybook 计划", "headings": []},
+            {
+                "type": "article",
+                "id": "agent-os",
+                "title": "个人 Agent OS",
+                "headings": [{"id": "star", "text": "北极星"}],
+            },
+            {"type": "article", "id": "graphify", "title": "Graphify", "headings": []},
+        ],
+    },
+    {
+        "id": "vol-biz",
+        "title": "01 · 事业与增长",
+        "tree": [
+            {"type": "article", "id": "biz-core", "title": "核心选择", "headings": []},
+            {
+                "type": "article",
+                "id": "biz-method",
+                "title": "零、方法论",
+                "headings": [{"id": "dirs", "text": "方向篮子"}],
+            },
+            {
+                "type": "article",
+                "id": "biz-global",
+                "title": "出海全球化 2.0",
+                "headings": [{"id": "fit", "text": "对你的落点"}],
+            },
+            {
+                "type": "article",
+                "id": "biz-evidence",
+                "title": "五层证据链",
+                "headings": [{"id": "five", "text": "五层"}],
+            },
+            {"type": "article", "id": "biz-smallteam", "title": "小团队产品机会", "headings": []},
+            {"type": "article", "id": "biz-pending", "title": "尚未摘要的事业页", "headings": []},
+        ],
+    },
+    {
+        "id": "vol-hk",
+        "title": "02 · 香港与职业",
+        "tree": [
+            {
+                "type": "article",
+                "id": "hk-plan",
+                "title": "香港规划 · 死保目标",
+                "headings": [{"id": "must", "text": "两个死保"}],
+            },
+            {
+                "type": "article",
+                "id": "hk-job",
+                "title": "香港技术岗求职",
+                "headings": [{"id": "track", "text": "赛道"}],
+            },
+            {"type": "article", "id": "hk-skill", "title": "职业技能", "headings": []},
+        ],
+    },
+    {
+        "id": "vol-learn",
+        "title": "03 · 学习与思考",
+        "tree": [
+            {"type": "article", "id": "mybook", "title": "mybook 计划", "headings": []},
+            {"type": "article", "id": "edu", "title": "教育", "headings": []},
+        ],
+    },
+    {
+        "id": "vol-ops",
+        "title": "04 · 运营与收件箱",
+        "tree": [{"type": "article", "id": "ops", "title": "运营与收件箱", "headings": []}],
+    },
+    {
+        "id": "vol-agent",
+        "title": "05 · 个人 Agent OS",
+        "tree": [
+            {
+                "type": "article",
+                "id": "agent-os",
+                "title": "个人 Agent OS",
+                "headings": [{"id": "star", "text": "北极星"}],
+            }
+        ],
+    },
+    {
+        "id": "vol-tech",
+        "title": "技术笔记",
+        "tree": [{"type": "article", "id": "graphify", "title": "Graphify", "headings": []}],
+    },
+]
+
+
+def main() -> None:
+    seen: set[str] = set()
+    order: list[str] = []
+    for vol in VOLUMES:
+        if vol["id"] == "wb-home":
+            continue
+        for node in vol["tree"]:
+            if node["id"] not in seen:
+                seen.add(node["id"])
+                order.append(node["id"])
+
+    extra = [
+        {
+            "id": "vol-biz",
+            "title": "01 · 事业与增长",
+            "volume": "01 · 事业与增长",
+            "trail": [],
+            "headings": [],
+            "html": "<div class='home-hero'><h1>01 · 事业与增长</h1></div><p class='no-indent'>判断、方法、尚未摘要的子树。</p>",
+        },
+        {
+            "id": "vol-hk",
+            "title": "02 · 香港与职业",
+            "volume": "02 · 香港与职业",
+            "trail": [],
+            "headings": [],
+            "html": "<div class='home-hero'><h1>02 · 香港与职业</h1></div><p class='no-indent'>签证、入学、求职。</p>",
+        },
+        {
+            "id": "vol-learn",
+            "title": "03 · 学习与思考",
+            "volume": "03 · 学习与思考",
+            "trail": [],
+            "headings": [],
+            "html": "<div class='home-hero'><h1>03 · 学习与思考</h1></div>",
+        },
+        {
+            "id": "vol-ops",
+            "title": "04 · 运营与收件箱",
+            "volume": "04 · 运营与收件箱",
+            "trail": [],
+            "headings": [],
+            "html": "<div class='home-hero'><h1>04 · 运营与收件箱</h1></div><p class='no-indent'>敏感页未上线。</p>",
+        },
+        {
+            "id": "vol-agent",
+            "title": "05 · 个人 Agent OS",
+            "volume": "05 · 个人 Agent OS",
+            "trail": [],
+            "headings": [],
+            "html": "<div class='home-hero'><h1>05 · 个人 Agent OS</h1></div>",
+        },
+        {
+            "id": "vol-tech",
+            "title": "技术笔记",
+            "volume": "技术笔记",
+            "trail": [],
+            "headings": [],
+            "html": "<div class='home-hero'><h1>技术笔记</h1></div>",
+        },
+    ]
+
+    payload = {
+        "title": "工作台",
+        "homeHtml": next(a["html"] for a in ARTICLES if a["id"] == "wb-home"),
+        "volumes": VOLUMES,
+        "articles": ARTICLES + extra,
+        "order": order,
+    }
+    DEST.parent.mkdir(parents=True, exist_ok=True)
+    DEST.write_text(
+        "window.WIKI = " + json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + ";\n",
+        encoding="utf-8",
+    )
+    print(f"wrote {DEST} articles={len(payload['articles'])}")
+
+
+if __name__ == "__main__":
+    main()
