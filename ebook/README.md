@@ -1,4 +1,4 @@
-# 工厂文集
+# 以小控大
 
 从仓库里的成熟文章生成阅读成品。
 
@@ -9,7 +9,7 @@ python3 -m pip install -r ebook/requirements.txt
 python3 ebook/build_epub.py
 ```
 
-产出：`ebook/以小控大——工厂文集.epub`
+产出：`ebook/以小控大.epub`
 
 ## 离线 wiki（电脑，推荐）
 

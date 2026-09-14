@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 EBOOK_DIR = Path(__file__).resolve().parent
-OUT_PATH = EBOOK_DIR / "以小控大——工厂文集.epub"
+OUT_PATH = EBOOK_DIR / "以小控大.epub"
 COVER_PATH = EBOOK_DIR / "cover.png"
 CSS_PATH = EBOOK_DIR / "stylesheet.css"
 FONT_PATH = Path("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc")
@@ -34,6 +34,7 @@ SKIP_SUFFIXES = {".docx", ".zip", ".xlsx", ".pdf", ".png", ".DS_Store"}
 SKIP_NAMES = {
     "书稿定位与查漏策略.md",
     "贵的知识——专家访谈需求素材库.html",
+    "家庭手册——孩子的动力与外加结构.html",
     ".DS_Store",
 }
 SKIP_RELATIVE = {
@@ -44,6 +45,7 @@ SKIP_RELATIVE = {
     "书稿 5/概念与技能——碎片分析底稿.md",
     "书稿 5/总论/2.5 工程技术.md",
     "书稿 5/走向真实的交易/4 工程技术.html",
+    "tools/README.md",
 }
 
 REDIRECT_MARKERS = ("请改读", "本篇已迁", "本章已迁", "正文不再维护")
@@ -131,6 +133,10 @@ BOOK5_ROOT_GROUPS = [
         [
             "根据地的成立条件——李自成反例与三前提一时机.md",
             "毛泽东两段论述——实事求是·控制闭环·转化框架的合流.md",
+            "灯塔、继承与消化——从菲尔兹奖公开信看数学如何长.md",
+            "一套模型，许多个自己——系统、重建，与差异从哪来.md",
+            "渗透、推高与自改进——从布林一场对谈看骨架、偏差与撞不动的墙.md",
+            "内驱力是产物，不是前提——小孩的动力与外加结构.md",
         ],
     ),
 ]
@@ -451,7 +457,7 @@ def xhtml_document(
 
 PREFACE_MD = """# 前言
 
-这一本电子书，把工厂里已经写成文章的稿子收成一部可翻的书。
+这一本电子书，把仓库里已经写成文章的稿子收成一部可翻的书。
 
 文章数量多、题材跨度大——从量子与信息、控制论与目的论，到课堂、谈判、根据地、宁德时代。骨架只有一句：
 
@@ -461,7 +467,7 @@ PREFACE_MD = """# 前言
 
 ## 这部文集怎么读
 
-工厂里其实有三种切法，不是三套世界观：
+书稿里其实有三种切法，不是三套世界观：
 
 1. **知识论**（卷一）：人如何认识、思考、安顿。文风最平实，适合当入口。
 2. **理性与实干**（卷二）：渺小的人凭什么在宏大世界里有效存在、甚至创造。上篇讲人怎么做，接缝是实践，下篇讲世界为何回应。
@@ -531,7 +537,7 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
         Volume(
             "book4",
             "卷一　知识论",
-            "人如何认识、思考、生活，以及如何与自然和他人相处。由内而外：知识与理性，思维，生命的拼图。文风平实，是工厂里最接近完书的一册。",
+            "人如何认识、思考、生活，以及如何与自然和他人相处。由内而外：知识与理性，思维，生命的拼图。文风平实，是各卷里最接近完书的一册。",
             take_many(ordered_existing(ROOT / "书稿 4", BOOK4_ORDER)),
         )
     )
@@ -570,6 +576,7 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
     )
     dizhe = [
         ROOT / "从小与大到以小控大——底层视角如何闭环.md",
+        ROOT / "三句内核——认一个系统、世界怎么动、人凭什么下手.md",
         ROOT / "工程技术——着地、积累、外衣与内核.md",
     ]
     trade_dir = ROOT / "书稿 5" / "走向真实的交易"
@@ -710,7 +717,6 @@ def make_cover() -> None:
     img = Image.new("RGB", (w, h), "#1c1915")
     draw = ImageDraw.Draw(img)
     font_title = ImageFont.truetype(str(FONT_PATH), 168)
-    font_sub = ImageFont.truetype(str(FONT_PATH), 42)
     font_small = ImageFont.truetype(str(FONT_PATH), 36)
 
     draw.rectangle([90, 90, w - 90, h - 90], outline="#c4b89a", width=3)
@@ -719,14 +725,9 @@ def make_cover() -> None:
     title = BOOK_TITLE
     bbox = draw.textbbox((0, 0), title, font=font_title)
     tw = bbox[2] - bbox[0]
-    draw.text(((w - tw) / 2, 860), title, font=font_title, fill="#f4efe4")
+    draw.text(((w - tw) / 2, 960), title, font=font_title, fill="#f4efe4")
 
-    draw.line([(w * 0.35, 1120), (w * 0.65, 1120)], fill="#c4b89a", width=2)
-
-    sub = BOOK_SUBTITLE
-    bbox = draw.textbbox((0, 0), sub, font=font_sub)
-    sw = bbox[2] - bbox[0]
-    draw.text(((w - sw) / 2, 1180), sub, font=font_sub, fill="#d9d1c0")
+    draw.line([(w * 0.35, 1220), (w * 0.65, 1220)], fill="#c4b89a", width=2)
 
     author = BOOK_AUTHOR
     bbox = draw.textbbox((0, 0), author, font=font_small)
@@ -743,7 +744,6 @@ def cover_xhtml() -> str:
     inner = """
 <div class="cover-page">
 <h1 class="cover-title">以小控大</h1>
-<p class="cover-subtitle">工厂文集：从世界底层到人如何变强</p>
 <hr class="cover-rule"/>
 <p class="cover-meta">cffyh</p>
 </div>
@@ -757,7 +757,6 @@ def colophon_html() -> str:
 <div class="colophon">
 <h1>版权与编纂说明</h1>
 <p>《{BOOK_TITLE}》</p>
-<p>{BOOK_SUBTITLE}</p>
 <p>作者　{BOOK_AUTHOR}</p>
 <p>来源仓库　github.com/cffyh/mybook</p>
 <p>电子书由文稿自动编成　{today}</p>
@@ -797,7 +796,7 @@ def volume_page_html(vol: Volume) -> str:
     blurb_p = f'<p class="volume-blurb">{blurb}</p>' if blurb else ""
     inner = f"""
 <div class="volume-page">
-<p class="volume-kicker">工厂文集</p>
+<p class="volume-kicker">以小控大</p>
 <h1 class="volume-title">{html_lib.escape(vol.title)}</h1>
 {blurb_p}
 </div>
@@ -861,12 +860,12 @@ def build_opf(volumes: list[Volume], chapter_files: list[tuple[str, str]]) -> st
 <package xmlns="http://www.idpf.org/2007/opf" unique-identifier="pub-id" version="3.0" xml:lang="{LANGUAGE}">
   <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
     <dc:identifier id="pub-id">{BOOK_ID}</dc:identifier>
-    <dc:title>{html_lib.escape(BOOK_TITLE)}——{html_lib.escape(BOOK_SUBTITLE)}</dc:title>
+    <dc:title>{html_lib.escape(BOOK_TITLE)}</dc:title>
     <dc:creator>{html_lib.escape(BOOK_AUTHOR)}</dc:creator>
     <dc:language>{LANGUAGE}</dc:language>
     <dc:publisher>{html_lib.escape(PUBLISHER)}</dc:publisher>
     <dc:date>{today}</dc:date>
-    <dc:description>{html_lib.escape(BOOK_SUBTITLE)}。据 cffyh/mybook 工厂文稿自动编成的 EPUB 文集。</dc:description>
+    <dc:description>据 cffyh/mybook 书稿自动编成的 EPUB 文集。</dc:description>
     <meta property="dcterms:modified">{today}T00:00:00Z</meta>
     <meta name="cover" content="cover-image"/>
   </metadata>
