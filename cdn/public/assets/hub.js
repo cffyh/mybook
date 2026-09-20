@@ -1,11 +1,5 @@
 (function () {
   const root = document.getElementById("spaces");
-  const logout = document.getElementById("logout");
-
-  logout.addEventListener("click", async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    location.href = "/login";
-  });
 
   fetch("/spaces.json")
     .then((r) => r.json())

@@ -432,18 +432,16 @@ def sync_cdn() -> None:
     dest = ROOT / "cdn" / "public" / "s" / "mybook"
     dest.mkdir(parents=True, exist_ok=True)
     (dest / "assets").mkdir(exist_ok=True)
-    shutil.copy2(WIKI_DIR / "index.html", dest / "index.html")
-    for name in ("style.css", "wiki.js", "content.js"):
-        src = WIKI_DIR / "assets" / name
+    shared = ROOT / "cdn" / "public" / "assets"
+    shared.mkdir(exist_ok=True)
+    for src_name, dest_name in (("style.css", "wiki.css"), ("wiki.js", "wiki.js")):
+        src = WIKI_DIR / "assets" / src_name
         if src.exists():
-            shutil.copy2(src, dest / "assets" / name)
-    skin = ROOT / "cdn" / "public" / "s" / "workbench" / "assets"
-    if skin.exists():
-        for name in ("style.css", "wiki.js"):
-            src = WIKI_DIR / "assets" / name
-            if src.exists():
-                shutil.copy2(src, skin / name)
-    print(f"synced wiki → {dest}")
+            shutil.copy2(src, shared / dest_name)
+    content = WIKI_DIR / "assets" / "content.js"
+    if content.exists():
+        shutil.copy2(content, dest / "assets" / "content.js")
+    print(f"synced wiki chrome → {shared} ; content → {dest}")
 
 
 def serve(port: int) -> None:

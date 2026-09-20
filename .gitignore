@@ -13,10 +13,12 @@ ebook/__pycache__/
 # Python
 __pycache__/
 *.py[cod]
+ebook/.venv/
 
 # Cloudflare Worker local state and generated space copy
+.wrangler/
 cdn/.wrangler/
-cdn/public/s/mybook/
+cdn/public/s/mybook/assets/content.js
 .cursor/mcp.json
 
 # 工作台是独立 git（workbench/.git），生成树不进文集仓库

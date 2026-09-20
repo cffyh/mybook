@@ -361,13 +361,16 @@ function escapeHtml(s) {
 }
 
 export async function serveWikiJs(env, spaceId, fallback) {
-  const cached = await env.AUTH.get(WIKI_KEY(spaceId));
-  if (!cached) return fallback;
-  const body = `window.WIKI = ${cached};\n`;
-  return new Response(body, {
-    headers: {
-      "Content-Type": "application/javascript; charset=utf-8",
-      "Cache-Control": "private, no-store",
-    },
-  });
+  try {
+    const wiki = await loadWiki(env, spaceId);
+    const body = `window.WIKI = ${JSON.stringify(wiki)};\n`;
+    return new Response(body, {
+      headers: {
+        "Content-Type": "application/javascript; charset=utf-8",
+        "Cache-Control": "private, no-store",
+      },
+    });
+  } catch {
+    return fallback;
+  }
 }

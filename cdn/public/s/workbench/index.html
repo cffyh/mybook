@@ -2,15 +2,19 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>工作台 · 知识总库</title>
-  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="/assets/wiki.css?v=4">
 </head>
 <body>
   <div class="app" id="app">
+    <div class="nav-scrim" id="nav-scrim" hidden></div>
     <aside class="sidebar" id="sidebar">
       <div class="brand">
-        <a href="#/">工作台</a>
+        <div class="brand-row">
+          <a href="#/">工作台</a>
+          <button class="icon-btn nav-close" id="nav-close" type="button" aria-label="收起目录">关闭</button>
+        </div>
         <span class="sub">云枢摘要 · 第一波</span>
       </div>
       <div class="search">
@@ -20,13 +24,12 @@
     </aside>
     <div class="main">
       <header class="top">
-        <button class="icon-btn" id="toggle-sidebar" title="显示/隐藏目录">目录</button>
+        <button class="icon-btn" id="toggle-sidebar" type="button" title="显示/隐藏目录" aria-controls="sidebar" aria-expanded="false">目录</button>
         <div class="crumb" id="crumb">工作台</div>
         <nav class="pager">
           <a id="prev" href="#/">上一篇</a>
           <a id="next" href="#/">下一篇</a>
         </nav>
-        <button class="icon-btn" id="theme" title="切换主题">主题</button>
         <span class="help">J / K 上一下一篇</span>
       </header>
       <div class="scroll" id="scroll">
@@ -38,7 +41,7 @@
       </div>
     </div>
   </div>
-  <script src="assets/content.js"></script>
-  <script src="assets/wiki.js"></script>
+  <script src="/s/workbench/assets/content.js"></script>
+  <script src="/assets/wiki.js?v=5"></script>
 </body>
 </html>
