@@ -23,25 +23,31 @@ export async function listSpaces(env) {
 
 export async function loadWiki(env, spaceId) {
   if (!validId(spaceId)) throw new Error("无效的 space_id");
-  const cached = await env.AUTH.get(WIKI_KEY(spaceId), "json");
-  if (cached && cached.articles) {
-    if (spaceId === "workbench") {
+
+  // 工作台：KV 是真相（MCP 可写）。
+  if (spaceId === "workbench") {
+    const cached = await env.AUTH.get(WIKI_KEY(spaceId), "json");
+    if (cached && cached.articles) {
       const head = await env.AUTH.get(HEAD_KEY);
       if (!head) await commitWiki(env, cached, "seed existing kv");
+      return cached;
     }
-    return cached;
+    const url = new URL(`https://vault.local/s/${spaceId}/assets/content.js`);
+    const res = await env.ASSETS.fetch(url);
+    if (!res.ok) throw new Error(`空间 ${spaceId} 不存在`);
+    const wiki = parseWikiJs(await res.text());
+    await env.AUTH.put(WIKI_KEY(spaceId), JSON.stringify(wiki));
+    const head = await env.AUTH.get(HEAD_KEY);
+    if (!head) await commitWiki(env, wiki, "seed from static content.js");
+    return wiki;
   }
 
+  // 以小控大等只读空间：静态 content.js 是真相。
+  // 不再优先读 KV——否则 wrangler 更新了 ASSETS，线上仍卡在旧 wiki:mybook。
   const url = new URL(`https://vault.local/s/${spaceId}/assets/content.js`);
   const res = await env.ASSETS.fetch(url);
   if (!res.ok) throw new Error(`空间 ${spaceId} 不存在`);
-  const wiki = parseWikiJs(await res.text());
-  await env.AUTH.put(WIKI_KEY(spaceId), JSON.stringify(wiki));
-  if (spaceId === "workbench") {
-    const head = await env.AUTH.get(HEAD_KEY);
-    if (!head) await commitWiki(env, wiki, "seed from static content.js");
-  }
-  return wiki;
+  return parseWikiJs(await res.text());
 }
 
 export async function saveWiki(env, spaceId, wiki, message) {
