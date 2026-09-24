@@ -117,13 +117,18 @@ def section_trail(ch: ep.Chapter, vol: ep.Volume) -> list[str]:
             return ["踏地"]
         if "/点/" in rel:
             return ["点"]
-        if "/演绎/" in rel:
-            return ["演绎"]
         if "/知识/" in rel:
             return ["知识"]
         if name in BOOK5_FILE_GROUP:
             return [BOOK5_FILE_GROUP[name]]
         if "/走向真实的交易/" in rel:
+            named = {
+                "矛盾、问题、需求、痛点.md": "需求、目标与差距",
+                "一根矛盾，一串需求.md": "需求、目标与差距",
+                "老底与新刃.md": "生存空间",
+            }.get(name)
+            if named:
+                return [named]
             m = re.match(r"^(\d+)", stem)
             if m:
                 return [
@@ -177,7 +182,6 @@ BOOK5_GROUP_ORDER = [
     "创新与浪潮",
     "工作模型",
     "点",
-    "演绎",
     "知识",
     "表达与沟通",
     "学习与技能",

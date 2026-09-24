@@ -487,7 +487,7 @@ PREFACE_MD = """# 前言
 1. **知识论**（卷一）：人如何认识、思考、安顿。文风最平实，适合当入口。
 2. **理性与实干**（卷二）：渺小的人凭什么在宏大世界里有效存在、甚至创造。上篇讲人怎么做，接缝是实践，下篇讲世界为何回应。
 3. **转化框架**（卷三）：世界以结构/关系为本体，靠转化演进。骨架最清楚，篇幅最短。
-4. **走向真实的交易**（卷四）：当前主写区。把通用机制接到立足、成交、变强，并收总论、点、演绎与着地篇。
+4. **走向真实的交易**（卷四）：当前主写区。把通用机制接到立足、成交、变强，并收总论、点与着地篇。
 5. **认识与行动**（卷五）：把原始笔记熔成「认识→行动」十部草稿，求全，不是文风基准。
 6. **关键文章 / 札记**（卷六、卷七）：进不了某书也不丢的单篇，以及拆书与压轴案例。
 
@@ -601,12 +601,6 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
             trade_files.append(p)
     point_dir = ROOT / "书稿 5" / "点"
     point_files = sorted(point_dir.glob("*"), key=lambda p: p.name)
-    yan_dir = ROOT / "书稿 5" / "演绎"
-    yan_files = [
-        yan_dir / "演绎三部曲·上篇——概念的层次演绎.md",
-        yan_dir / "演绎三部曲·中篇——一个矛盾生一串需求.md",
-        yan_dir / "演绎三部曲·下篇——把骨演绎成尖刀.md",
-    ]
     zhi_dir = ROOT / "书稿 5" / "知识"
     zhi_files = sorted(zhi_dir.glob("*.md"), key=numeric_key)
     extra_root: list[Path] = []
@@ -617,13 +611,12 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
         Volume(
             "book5",
             "卷四　走向真实的交易",
-            "当前主写区。总论立门：人安身靠两极——理性照清世界，互动嵌入真实。随后是着地两篇、生存与交易、点与演绎、学习与表达。把通用机制写成可判定、可落地的尖刀。",
+            "当前主写区。总论立门：人安身靠两极——理性照清世界，互动嵌入真实。随后是着地两篇、生存与交易、点、学习与表达。把通用机制写成可判定、可落地的尖刀。",
             take_many(
                 zonglun_files
                 + dizhe
                 + trade_files
                 + list(point_files)
-                + yan_files
                 + zhi_files
                 + extra_root
             ),
