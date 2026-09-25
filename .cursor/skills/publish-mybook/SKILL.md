@@ -2,14 +2,14 @@
 name: publish-mybook
 description: >-
   Rebuild the mybook wiki, commit and push to origin, then deploy the
-  knowledge vault to Cloudflare. Use when the user asks to 更新 git、更新 wiki、
-  发布到 Cloudflare、发布文集, or to sync i.fotira.com.br / knowledge-vault
-  after article changes.
+  knowledge vault to Cloudflare. Trigger immediately when the user says
+  发布, including 发布、发布一下、发布文集, or 更新 git、wiki 和 Cloudflare.
+  Also use for syncing i.fotira.com.br / knowledge-vault after article changes.
 ---
 
 # 发布文集
 
-按顺序做完三步：重建 wiki、提交并推送 git、部署 Cloudflare。用户说「更新 git、wiki 和 Cloudflare」时，三步都做，不要只做其中一步。
+用户说「发布」时，立刻按顺序做完三步：重建 wiki、提交并推送 git、部署 Cloudflare。不要只做其中一步，也不要先问要不要发布。
 
 仓库根目录：本项目根（含 `ebook/`、`wiki/`、`cdn/`）。
 
