@@ -606,6 +606,8 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
     point_files = sorted(point_dir.glob("*"), key=lambda p: p.name)
     zhi_dir = ROOT / "书稿 5" / "知识"
     zhi_files = sorted(zhi_dir.glob("*.md"), key=numeric_key)
+    practice_dir = ROOT / "书稿 5" / "个人实践"
+    practice_files = sorted(practice_dir.glob("*.md"), key=lambda p: p.name)
     extra_root: list[Path] = []
     for _group, names in BOOK5_ROOT_GROUPS:
         extra_root.extend(ordered_existing(ROOT / "书稿 5", names))
@@ -614,7 +616,7 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
         Volume(
             "book5",
             "卷四　走向真实的交易",
-            "当前主写区。总论立门：人安身靠两极——理性照清世界，互动嵌入真实。随后是着地两篇、生存与交易、点、学习与表达。把通用机制写成可判定、可落地的尖刀。",
+            "当前主写区。总论立门：人安身靠两极——理性照清世界，互动嵌入真实。随后是着地两篇、生存与交易、点、学习与表达。把通用机制写成可判定、可落地的尖刀。个人实践另记眼前要做的事。",
             take_many(
                 zonglun_files
                 + dizhe
@@ -622,6 +624,7 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
                 + list(point_files)
                 + zhi_files
                 + extra_root
+                + practice_files
             ),
         )
     )

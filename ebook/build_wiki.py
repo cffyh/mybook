@@ -119,6 +119,8 @@ def section_trail(ch: ep.Chapter, vol: ep.Volume) -> list[str]:
             return ["点"]
         if "/知识/" in rel:
             return ["知识"]
+        if "/个人实践/" in rel:
+            return ["个人实践"]
         if name in BOOK5_FILE_GROUP:
             return [BOOK5_FILE_GROUP[name]]
         if "/走向真实的交易/" in rel:
@@ -188,6 +190,7 @@ BOOK5_GROUP_ORDER = [
     "方法与局面",
     "记忆与输出",
     "根据地与合流",
+    "个人实践",
 ]
 
 NOTE_GROUP_ORDER = [
