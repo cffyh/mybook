@@ -110,6 +110,7 @@ def section_trail(ch: ep.Chapter, vol: ep.Volume) -> list[str]:
         if "/总论/" in rel:
             return ["总论"]
         if name in {
+            "篇首——知行合一，天人合一.md",
             "从小与大到以小控大——底层视角如何闭环.md",
             "三句内核——认一个系统、世界怎么动、人凭什么下手.md",
             "工程技术——着地、积累、外衣与内核.md",

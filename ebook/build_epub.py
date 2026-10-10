@@ -599,6 +599,7 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
         key=numeric_key,
     )
     dizhe = [
+        ROOT / "篇首——知行合一，天人合一.md",
         ROOT / "从小与大到以小控大——底层视角如何闭环.md",
         ROOT / "三句内核——认一个系统、世界怎么动、人凭什么下手.md",
         ROOT / "工程技术——着地、积累、外衣与内核.md",
