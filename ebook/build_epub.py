@@ -679,6 +679,7 @@ def collect_volumes(sources: list[Path]) -> tuple[list[Volume], list[Path]]:
                 "article5.md",
                 "物理与数学.md",
                 "数学三位一体——在物理里看见本体，在手里练成技巧，把推理带出数学.md",
+                "群论——把对称写成可推演的结构.md",
                 "数学与其他学科.md",
                 "数学思想如何在工业界算法实践中产生质的飞跃.md",
             ],
